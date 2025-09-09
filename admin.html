@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel de administración para gestionar reservas.">
+  <title>Panel de Administración</title>
+  <style>
+    :root {
+      --primary-color: #0b5ed7;
+      --text-color: #222;
+      --background-color: #f7f7fb;
+      --card-background: #ffffff;
+      --border-color: #e0e0e0;
+      --shadow-color: rgba(30, 30, 80, 0.06);
+      --danger-color: #dc2626;
+      --font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --border-radius: 8px;
+      --padding-sm: 8px;
+      --padding-md: 12px;
+      --padding-lg: 24px;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--background-color);
+      color: var(--text-color);
+      padding: var(--padding-lg);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-background);
+      padding: var(--padding-lg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    input,
+    button {
+      font-family: var(--font-family);
+      font-size: 1rem;
+      padding: var(--padding-sm) var(--padding-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      margin: var(--padding-sm) 0;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(11, 94, 215, 0.1);
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--primary-color);
+      color: var(--card-background);
+      border: none;
+      padding: var(--padding-sm) var(--padding-md);
+      font-weight: 500;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    button:hover {
+      background: #094bb3;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: var(--danger-color);
+      font-size: 0.875rem;
+      margin: var(--padding-sm) 0;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      animation: fadeInOut 3s ease forwards;
+    }
+
+    .toast.success {
+      background: #e6ffe6;
+    }
+
+    .toast.error {
+      background: #ffe6e6;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--padding-md);
+      flex-wrap: wrap;
+      gap: var(--padding-sm);
+    }
+
+    .filter-container {
+      display: flex;
+      gap: var(--padding-sm);
+      margin-bottom: var(--padding-md);
+    }
+
+    .filter-container input {
+      flex: 1;
+      max-width: 200px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--padding-md);
+    }
+
+    th,
+    td {
+      padding: var(--padding-sm) var(--padding-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      font-weight: 600;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    th:hover {
+      background: #e5e7eb;
+    }
+
+    td {
+      background: var(--card-background);
+    }
+
+    .action-btn {
+      background: var(--danger-color);
+      padding: 6px 12px;
+      font-size: 0.875rem;
+    }
+
+    .action-btn:hover {
+      background: #b91c1c;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-background);
+      padding: var(--padding-lg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .modal-content p {
+      margin: 0 0 var(--padding-md);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: var(--padding-sm);
+      justify-content: center;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      max-width: 120px;
+    }
+
+    .modal-buttons .cancel-btn {
+      background: #6b7280;
+    }
+
+    .modal-buttons .cancel-btn:hover {
+      background: #4b5563;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: var(--padding-md);
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      input,
+      button {
+        font-size: 0.875rem;
+      }
+
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--padding-sm);
+      }
+
+      .filter-container {
+        flex-direction: column;
+        max-width: 100%;
+      }
+
+      .filter-container input {
+        max-width: 100%;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: var(--padding-md);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Panel de Administración</h1>
+    <section id="loginArea">
+      <form id="loginForm" novalidate>
+        <div>
+          <input id="email" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico">
+          <div id="emailError" class="error" role="alert"></div>
+        </div>
+        <div>
+          <input id="password" type="password" placeholder="Contraseña" required aria-label="Contraseña">
+          <div id="passwordError" class="error" role="alert"></div>
+        </div>
+        <button id="loginBtn" type="submit">Ingresar</button>
+      </form>
+    </section>
+    <section id="adminArea" style="display: none;">
+      <div class="admin-header">
+        <p>Conectado como <span id="userEmail"></span></p>
+        <div>
+          <button id="homeBtn">Volver al Inicio</button>
+          <button id="logoutBtn">Cerrar sesión</button>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input id="filterName" type="text" placeholder="Filtrar por nombre" aria-label="Filtrar por nombre">
+        <input id="filterDate" type="date" aria-label="Filtrar por fecha">
+      </div>
+      <table id="tblReservas" aria-label="Lista de reservas">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Hora</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar esta reserva?</p>
+        <div class="modal-buttons">
+          <button id="confirmDeleteBtn">Eliminar</button>
+          <button id="cancelDeleteBtn" class="cancel-btn">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, collection, query, orderBy, onSnapshot, doc, deleteDoc } from './firebase.js';
+
+    const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
+    const loginArea = document.getElementById('loginArea');
+    const adminArea = document.getElementById('adminArea');
+    const userEmailSpan = document.getElementById('userEmail');
+    const tblBody = document.querySelector('#tblReservas tbody');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const filterName = document.getElementById('filterName');
+    const filterDate = document.getElementById('filterDate');
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const homeBtn = document.getElementById('homeBtn');
+    let deleteDocId = null;
+
+    // Form validation and login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      emailError.textContent = '';
+      passwordError.textContent = '';
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email) {
+        emailError.textContent = 'El correo electrónico es requerido';
+        return;
+      }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        emailError.textContent = 'Ingrese un correo electrónico válido';
+        return;
+      }
+      if (!password) {
+        passwordError.textContent = 'La contraseña es requerida';
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Cargando...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast('Ingreso exitoso', true);
+      } catch (err) {
+        console.error('Error al iniciar sesión:', err);
+        showToast(`Error: ${err.message}`, false);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Ingresar';
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        showToast('Sesión cerrada', true);
+      } catch (err) {
+        console.error('Error al cerrar sesión:', err);
+        showToast('Error al cerrar sesión', false);
+      }
+    });
+
+    // Home button redirect
+    homeBtn.addEventListener('click', () => {
+      window.location.href = 'Bar/index.html';
+    });
+
+    // Auth state observer
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.uid === ADMIN_UID) {
+        loginArea.style.display = 'none';
+        adminArea.style.display = 'block';
+        userEmailSpan.textContent = user.email || 'Usuario';
+
+        // Subscribe to reservas
+        const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+        onSnapshot(q, (snap) => {
+          tblBody.innerHTML = '';
+          snap.forEach((doc) => {
+            const r = doc.data();
+            if (shouldDisplayRow(r)) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>${escapeHtml(r.nombre || '')}</td>
+                <td>${escapeHtml(r.telefono || '')}</td>
+                <td>${escapeHtml(r.fecha || '')}</td>
+                <td>${escapeHtml(r.hora || '')}</td>
+                <td>${escapeHtml(r.descripcion || '')}</td>
+                <td><button class="action-btn" data-id="${doc.id}">Eliminar</button></td>
+              `;
+              tblBody.appendChild(tr);
+            }
+          });
+
+          // Add event listeners to delete buttons
+          document.querySelectorAll('.action-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              deleteDocId = btn.dataset.id;
+              confirmModal.style.display = 'flex';
+            });
+          });
+        }, (err) => {
+          console.error('Error al cargar reservas:', err);
+          showToast('Error al cargar reservas', false);
+        });
+      } else {
+        loginArea.style.display = 'block';
+        adminArea.style.display = 'none';
+      }
+    });
+
+    // Filter function
+    function shouldDisplayRow(data) {
+      const nameFilter = filterName.value.trim().toLowerCase();
+      const dateFilter = filterDate.value;
+      const matchesName = !nameFilter || (data.nombre || '').toLowerCase().includes(nameFilter);
+      const matchesDate = !dateFilter || (data.fecha || '') === dateFilter;
+      return matchesName && matchesDate;
+    }
+
+    // Filter event listeners
+    filterName.addEventListener('input', () => refreshTable());
+    filterDate.addEventListener('change', () => refreshTable());
+
+    // Refresh table on filter change
+    function refreshTable() {
+      const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+      onSnapshot(q, (snap) => {
+        tblBody.innerHTML = '';
+        snap.forEach((doc) => {
+          const r = doc.data();
+          if (shouldDisplayRow(r)) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${escapeHtml(r.nombre || '')}</td>
+              <td>${escapeHtml(r.telefono || '')}</td>
+              <td>${escapeHtml(r.fecha || '')}</td>
+              <td>${escapeHtml(r.hora || '')}</td>
+              <td>${escapeHtml(r.descripcion || '')}</td>
+              <td><button class="action-btn" data-id="${doc.id}">Eliminar</button></td>
+            `;
+            tblBody.appendChild(tr);
+          }
+        });
+
+        document.querySelectorAll('.action-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            deleteDocId = btn.dataset.id;
+            confirmModal.style.display = 'flex';
+          });
+        });
+      });
+    }
+
+    // Modal event listeners
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (deleteDocId) {
+        try {
+          await deleteDoc(doc(db, 'reservas', deleteDocId));
+          showToast('Reserva eliminada con éxito', true);
+        } catch (err) {
+          console.error('Error al eliminar reserva:', err);
+          showToast('Error al eliminar reserva', false);
+        }
+        deleteDocId = null;
+        confirmModal.style.display = 'none';
+      }
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      deleteDocId = null;
+      confirmModal.style.display = 'none';
+    });
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[c]);
+    }
+
+    // Toast notification
+    function showToast(msg, isSuccess = true) {
+      const toast = document.createElement('div');
+      toast.textContent = msg;
+      toast.className = `toast ${isSuccess ? 'success' : 'error'}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+</html>
