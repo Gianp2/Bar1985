@@ -7,18 +7,28 @@
   <title>Panel de Administración</title>
   <style>
     :root {
-      --primary-color: #0b5ed7;
-      --text-color: #222;
-      --background-color: #f7f7fb;
+      --primary-color: #3b82f6;
+      --secondary-color: #1d4ed8;
+      --text-color: #1f2937;
+      --background-color: #f9fafb;
       --card-background: #ffffff;
-      --border-color: #e0e0e0;
-      --shadow-color: rgba(30, 30, 80, 0.06);
-      --danger-color: #dc2626;
-      --font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, sans-serif;
-      --border-radius: 8px;
-      --padding-sm: 8px;
-      --padding-md: 12px;
+      --border-color: #e5e7eb;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --danger-color: #ef4444;
+      --success-color: #22c55e;
+      --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --border-radius: 12px;
+      --padding-xs: 8px;
+      --padding-sm: 12px;
+      --padding-md: 16px;
       --padding-lg: 24px;
+      --transition: all 0.2s ease-in-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
@@ -26,40 +36,43 @@
       background: var(--background-color);
       color: var(--text-color);
       padding: var(--padding-lg);
-      margin: 0;
-      line-height: 1.6;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .container {
-      max-width: 900px;
-      margin: 0 auto;
+      max-width: 1000px;
+      width: 100%;
       background: var(--card-background);
       padding: var(--padding-lg);
       border-radius: var(--border-radius);
-      box-shadow: 0 6px 20px var(--shadow-color);
+      box-shadow: 0 10px 30px var(--shadow-color);
     }
 
     h1 {
-      margin-top: 0;
       font-size: 2rem;
-      font-weight: 600;
+      font-weight: 700;
+      margin-bottom: var(--padding-lg);
+      color: var(--text-color);
+      text-align: center;
     }
 
-    input,
-    button {
+    input, button {
       font-family: var(--font-family);
-      font-size: 1rem;
+      font-size: 0.95rem;
       padding: var(--padding-sm) var(--padding-md);
       border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
-      margin: var(--padding-sm) 0;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: var(--transition);
     }
 
     input:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(11, 94, 215, 0.1);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
     }
 
     button {
@@ -67,14 +80,14 @@
       background: var(--primary-color);
       color: var(--card-background);
       border: none;
-      padding: var(--padding-sm) var(--padding-md);
-      font-weight: 500;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      font-weight: 600;
+      padding: var(--padding-sm) var(--padding-lg);
+      border-radius: var(--border-radius);
     }
 
     button:hover {
-      background: #094bb3;
-      transform: translateY(-1px);
+      background: var(--secondary-color);
+      transform: translateY(-2px);
     }
 
     button:active {
@@ -82,99 +95,124 @@
     }
 
     button:disabled {
-      background: #6b7280;
+      background: #9ca3af;
       cursor: not-allowed;
+      transform: none;
     }
 
     .error {
       color: var(--danger-color);
-      font-size: 0.875rem;
-      margin: var(--padding-sm) 0;
+      font-size: 0.85rem;
+      margin-top: var(--padding-xs);
+      font-weight: 500;
     }
 
     .toast {
       position: fixed;
-      right: 20px;
-      bottom: 20px;
-      padding: 12px 16px;
+      bottom: 32px;
+      right: 32px;
+      padding: var(--padding-sm) var(--padding-lg);
       border-radius: var(--border-radius);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
       z-index: 1000;
-      opacity: 0;
-      animation: fadeInOut 3s ease forwards;
+      color: #ffffff;
+      font-weight: 500;
+      animation: slideIn 0.3s ease forwards, slideOut 0.3s ease 2.7s forwards;
     }
 
     .toast.success {
-      background: #e6ffe6;
+      background: var(--success-color);
     }
 
     .toast.error {
-      background: #ffe6e6;
+      background: var(--danger-color);
     }
 
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(20px); }
-      10% { opacity: 1; transform: translateY(0); }
-      90% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(20px); }
+    @keyframes slideIn {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(100px); opacity: 0; }
     }
 
     .admin-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--padding-md);
+      margin-bottom: var(--padding-lg);
+      gap: var(--padding-md);
       flex-wrap: wrap;
+    }
+
+    .admin-header p {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .header-buttons {
+      display: flex;
       gap: var(--padding-sm);
     }
 
     .filter-container {
       display: flex;
       gap: var(--padding-sm);
-      margin-bottom: var(--padding-md);
+      margin-bottom: var(--padding-lg);
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .filter-container input {
       flex: 1;
-      max-width: 200px;
+      min-width: 160px;
+      max-width: 240px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: var(--padding-md);
+      background: var(--card-background);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      margin-bottom: var(--padding-lg);
     }
 
-    th,
-    td {
-      padding: var(--padding-sm) var(--padding-md);
+    th, td {
+      padding: var(--padding-md);
       text-align: left;
       border-bottom: 1px solid var(--border-color);
     }
 
     th {
+      background: #f1f5f9;
       font-weight: 600;
-      background: #f9f9f9;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
+      color: var(--text-color);
+      transition: var(--transition);
     }
 
     th:hover {
-      background: #e5e7eb;
+      background: #e2e8f0;
     }
 
     td {
       background: var(--card-background);
+      font-size: 0.9rem;
     }
 
     .action-btn {
       background: var(--danger-color);
-      padding: 6px 12px;
-      font-size: 0.875rem;
+      padding: var(--padding-xs) var(--padding-md);
+      font-size: 0.85rem;
+      border-radius: 8px;
+      color: #ffffff;
     }
 
     .action-btn:hover {
       background: #b91c1c;
+      transform: translateY(-1px);
     }
 
     .modal {
@@ -184,7 +222,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 2000;
       justify-content: center;
       align-items: center;
@@ -194,14 +232,22 @@
       background: var(--card-background);
       padding: var(--padding-lg);
       border-radius: var(--border-radius);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      max-width: 480px;
       width: 90%;
       text-align: center;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     .modal-content p {
-      margin: 0 0 var(--padding-md);
+      margin-bottom: var(--padding-md);
+      font-size: 1.1rem;
+      font-weight: 500;
     }
 
     .modal-buttons {
@@ -212,7 +258,7 @@
 
     .modal-buttons button {
       flex: 1;
-      max-width: 120px;
+      max-width: 160px;
     }
 
     .modal-buttons .cancel-btn {
@@ -221,40 +267,75 @@
 
     .modal-buttons .cancel-btn:hover {
       background: #4b5563;
+      transform: translateY(-1px);
     }
 
-    @media (max-width: 600px) {
+    .login-section {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: var(--padding-md);
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--padding-md);
+    }
+
+    .login-form div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
       .container {
         padding: var(--padding-md);
       }
 
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
       }
 
-      input,
-      button {
-        font-size: 0.875rem;
+      input, button {
+        font-size: 0.9rem;
       }
 
       .admin-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: var(--padding-sm);
       }
 
       .filter-container {
         flex-direction: column;
-        max-width: 100%;
+        align-items: stretch;
       }
 
       .filter-container input {
         max-width: 100%;
       }
 
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: var(--padding-sm);
+      }
+    }
+
+    @media (max-width: 480px) {
       .modal-content {
         width: 95%;
         padding: var(--padding-md);
+      }
+
+      .modal-buttons button {
+        padding: var(--padding-xs) var(--padding-md);
+        font-size: 0.9rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
       }
     }
   </style>
@@ -262,8 +343,8 @@
 <body>
   <main class="container">
     <h1>Panel de Administración</h1>
-    <section id="loginArea">
-      <form id="loginForm" novalidate>
+    <section id="loginArea" class="login-section">
+      <form id="loginForm" class="login-form" novalidate>
         <div>
           <input id="email" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico">
           <div id="emailError" class="error" role="alert"></div>
@@ -278,7 +359,7 @@
     <section id="adminArea" style="display: none;">
       <div class="admin-header">
         <p>Conectado como <span id="userEmail"></span></p>
-        <div>
+        <div class="header-buttons">
           <button id="homeBtn">Volver al Inicio</button>
           <button id="logoutBtn">Cerrar sesión</button>
         </div>
@@ -301,12 +382,12 @@
         <tbody></tbody>
       </table>
     </section>
-    <div id="confirmModal" class="modal">
+    <div id="confirmModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-content">
-        <p>¿Estás seguro de que deseas eliminar esta reserva?</p>
+        <p id="modalTitle">¿Estás seguro de que deseas eliminar esta reserva?</p>
         <div class="modal-buttons">
-          <button id="confirmDeleteBtn">Eliminar</button>
-          <button id="cancelDeleteBtn" class="cancel-btn">Cancelar</button>
+          <button id="confirmDeleteBtn" aria-label="Confirmar eliminación">Eliminar</button>
+          <button id="cancelDeleteBtn" class="cancel-btn" aria-label="Cancelar eliminación">Cancelar</button>
         </div>
       </div>
     </div>
@@ -332,6 +413,9 @@
     const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
     const homeBtn = document.getElementById('homeBtn');
     let deleteDocId = null;
+
+    // Initialize modal state
+    confirmModal.style.display = 'none';
 
     // Form validation and login
     loginForm.addEventListener('submit', async (e) => {
@@ -383,8 +467,38 @@
 
     // Home button redirect
     homeBtn.addEventListener('click', () => {
-      window.location.href = './index.html'; // Corregido para apuntar al directorio correcto
+      window.location.href = './index.html';
     });
+
+    // Populate table with filtered data
+    function populateTable(snap) {
+      tblBody.innerHTML = '';
+      snap.forEach((doc) => {
+        const r = doc.data();
+        if (shouldDisplayRow(r)) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${escapeHtml(r.nombre || '')}</td>
+            <td>${escapeHtml(r.telefono || '')}</td>
+            <td>${escapeHtml(r.fecha || '')}</td>
+            <td>${escapeHtml(r.hora || '')}</td>
+            <td>${escapeHtml(r.descripcion || '')}</td>
+            <td><button class="action-btn" data-id="${doc.id}" aria-label="Eliminar reserva">Eliminar</button></td>
+          `;
+          tblBody.appendChild(tr);
+        }
+      });
+
+      // Add event listeners to delete buttons
+      document.querySelectorAll('.action-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          deleteDocId = btn.dataset.id;
+          confirmModal.style.display = 'flex';
+          confirmModal.setAttribute('aria-hidden', 'false');
+          confirmDeleteBtn.focus();
+        });
+      });
+    }
 
     // Auth state observer
     onAuthStateChanged(auth, (user) => {
@@ -396,30 +510,7 @@
         // Subscribe to reservas
         const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
         onSnapshot(q, (snap) => {
-          tblBody.innerHTML = '';
-          snap.forEach((doc) => {
-            const r = doc.data();
-            if (shouldDisplayRow(r)) {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td>${escapeHtml(r.nombre || '')}</td>
-                <td>${escapeHtml(r.telefono || '')}</td>
-                <td>${escapeHtml(r.fecha || '')}</td>
-                <td>${escapeHtml(r.hora || '')}</td>
-                <td>${escapeHtml(r.descripcion || '')}</td>
-                <td><button class="action-btn" data-id="${doc.id}">Eliminar</button></td>
-              `;
-              tblBody.appendChild(tr);
-            }
-          });
-
-          // Add event listeners to delete buttons
-          document.querySelectorAll('.action-btn').forEach((btn) => {
-            btn.addEventListener('click', () => {
-              deleteDocId = btn.dataset.id;
-              confirmModal.style.display = 'flex';
-            });
-          });
+          populateTable(snap);
         }, (err) => {
           console.error('Error al cargar reservas:', err);
           showToast('Error al cargar reservas', false);
@@ -427,6 +518,7 @@
       } else {
         loginArea.style.display = 'block';
         adminArea.style.display = 'none';
+        confirmModal.style.display = 'none'; // Ensure modal is hidden on logout
       }
     });
 
@@ -440,38 +532,15 @@
     }
 
     // Filter event listeners
-    filterName.addEventListener('input', () => refreshTable());
-    filterDate.addEventListener('change', () => refreshTable());
-
-    // Refresh table on filter change
-    function refreshTable() {
+    filterName.addEventListener('input', () => {
       const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
-      onSnapshot(q, (snap) => {
-        tblBody.innerHTML = '';
-        snap.forEach((doc) => {
-          const r = doc.data();
-          if (shouldDisplayRow(r)) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${escapeHtml(r.nombre || '')}</td>
-              <td>${escapeHtml(r.telefono || '')}</td>
-              <td>${escapeHtml(r.fecha || '')}</td>
-              <td>${escapeHtml(r.hora || '')}</td>
-              <td>${escapeHtml(r.descripcion || '')}</td>
-              <td><button class="action-btn" data-id="${doc.id}">Eliminar</button></td>
-            `;
-            tblBody.appendChild(tr);
-          }
-        });
+      onSnapshot(q, (snap) => populateTable(snap));
+    });
 
-        document.querySelectorAll('.action-btn').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            deleteDocId = btn.dataset.id;
-            confirmModal.style.display = 'flex';
-          });
-        });
-      });
-    }
+    filterDate.addEventListener('change', () => {
+      const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+      onSnapshot(q, (snap) => populateTable(snap));
+    });
 
     // Modal event listeners
     confirmDeleteBtn.addEventListener('click', async () => {
@@ -485,12 +554,23 @@
         }
         deleteDocId = null;
         confirmModal.style.display = 'none';
+        confirmModal.setAttribute('aria-hidden', 'true');
       }
     });
 
     cancelDeleteBtn.addEventListener('click', () => {
       deleteDocId = null;
       confirmModal.style.display = 'none';
+      confirmModal.setAttribute('aria-hidden', 'true');
+    });
+
+    // Keyboard navigation for modal
+    confirmModal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        deleteDocId = null;
+        confirmModal.style.display = 'none';
+        confirmModal.setAttribute('aria-hidden', 'true');
+      }
     });
 
     // Escape HTML to prevent XSS
@@ -509,6 +589,7 @@
       const toast = document.createElement('div');
       toast.textContent = msg;
       toast.className = `toast ${isSuccess ? 'success' : 'error'}`;
+      toast.setAttribute('role', 'alert');
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
     }
