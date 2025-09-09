@@ -16,9 +16,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="./css/styles.css">
-  <style>
-    /* Carousel styles removed */
-  </style>
 </head>
 <body>
   <!-- Contenedor de notificaciones toast -->
@@ -38,7 +35,7 @@
         <a href="#menu">Carta</a>
         <a href="#contacto">Contacto</a>
         <a href="#reservas" class="btn btn--gold" aria-label="Hacer una reserva">Reservas</a>
-        <a href="../admin.html" class="btn btn--outline" aria-label="Acceder al panel de administración">Admin</a>
+        <a href="./admin.html" class="btn btn--outline" aria-label="Acceder al panel de administración">Admin</a>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="Abrir menú de navegación" aria-controls="nav-links" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -65,14 +62,12 @@
       <div class="reveal">
         <h2 class="section__title" id="about-title">Sobre Nosotros</h2>
         <p>1985 Bar Coctelería es el corazón de Las Parejas. Disfruta de nuestro <strong>Gin de Uva</strong>, cervezas artesanales y hamburguesas en un ambiente vibrante.</p>
-        <br>
         <p class="mt-8">
           <strong>Ubicación:</strong>
           <a href="https://www.google.com/maps/search/?api=1&query=Calle+20+957,+Las+Parejas,+Santa+Fe,+Argentina" target="_blank" rel="noopener noreferrer" class="location-link" aria-label="Ver ubicación en Google Maps">
             <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Calle 20 Nro. 957
           </a>
         </p>
-        <br>
         <ul class="bullets mt-8">
           <li>Experiencia única</li>
           <li>Calidad en bebidas</li>
@@ -99,7 +94,6 @@
       <div id="events-message" class="center mt-8" role="alert" aria-live="assertive" style="display: none;">
         <p class="toast__desc">Cargando eventos...</p>
       </div>
-      <br>
       <div class="center mt-24">
         <a href="#reservas" class="btn btn--gold" role="button" aria-label="Reservar una mesa para un evento">Reservar Mesa</a>
       </div>
@@ -217,7 +211,7 @@
         </form>
       </div>
       <div class="reveal reservas__image">
-        <!-- Imagen de fondo o contenido visual -->
+        <!-- Aquí puedes agregar una imagen si es necesario -->
       </div>
     </div>
   </section>
@@ -283,6 +277,118 @@
       </div>
     </div>
   </footer>
+
+  <!-- Script de Firebase para manejar reservas -->
+  <script type="module">
+    // Importar módulos de Firebase (versión actualizada)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    // Configuración de Firebase (usar la configuración de tu proyecto)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
+      authDomain: "bar1985-d34ea.firebaseapp.com",
+      projectId: "bar1985-d34ea",
+      storageBucket: "bar1985-d34ea.firebasestorage.app",
+      messagingSenderId: "1010372504350",
+      appId: "1:1010372504350:web:5b7a4f88bb6a52d270b70f",
+      measurementId: "G-1TEEFS4FL2"
+    };
+
+    // Inicializar Firebase y Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Función global para manejar el envío del formulario
+    window.handleSubmit = async function(event) {
+      event.preventDefault();
+      
+      const form = document.getElementById('reserva-form');
+      const formMessage = document.getElementById('form-message');
+      
+      if (!form) {
+        console.error('No se encontró el formulario #reserva-form');
+        return;
+      }
+
+      // Obtener valores del formulario
+      const nombre = form.nombre?.value?.trim() || '';
+      const telefono = form.telefono?.value?.trim() || '';
+      const fecha = form.fecha?.value || '';
+      const hora = form.hora?.value || '';
+      const personas = form.personas?.value || '';
+
+      // Validación básica
+      if (!nombre || !telefono || !fecha || !hora || !personas) {
+        if (formMessage) {
+          formMessage.hidden = false;
+          formMessage.textContent = 'Por favor, completa todos los campos.';
+          formMessage.style.color = 'red';
+        }
+        return;
+      }
+
+      // Validación adicional para el teléfono
+      const phoneRegex = /^\+?[0-9]{10,15}$/;
+      if (!phoneRegex.test(telefono)) {
+        if (formMessage) {
+          formMessage.hidden = false;
+          formMessage.textContent = 'Por favor, introduce un número de teléfono válido.';
+          formMessage.style.color = 'red';
+        }
+        return;
+      }
+
+      // Validación para el número de personas
+      const numPersonas = parseInt(personas, 10);
+      if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 20) {
+        if (formMessage) {
+          formMessage.hidden = false;
+          formMessage.textContent = 'Por favor, selecciona entre 1 y 20 personas.';
+          formMessage.style.color = 'red';
+        }
+        return;
+      }
+
+      try {
+        // Guardar la reserva en la colección 'reservas'
+        await addDoc(collection(db, 'reservas'), {
+          nombre,
+          telefono,
+          fecha,
+          hora,
+          personas: numPersonas,
+          createdAt: serverTimestamp()
+        });
+
+        // Mostrar mensaje de éxito
+        if (formMessage) {
+          formMessage.hidden = false;
+          formMessage.textContent = '¡Reserva enviada con éxito!';
+          formMessage.style.color = 'green';
+        }
+
+        // Reiniciar el formulario
+        form.reset();
+      } catch (err) {
+        console.error('Error al guardar la reserva:', err);
+        let errorMessage = 'Ocurrió un error al guardar la reserva. Intenta de nuevo.';
+        
+        // Manejo de errores específicos de Firebase
+        if (err.code === 'permission-denied') {
+          errorMessage = 'No tienes permisos para guardar la reserva. Contacta al administrador.';
+        } else if (err.code === 'unavailable') {
+          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
+        }
+
+        if (formMessage) {
+          formMessage.hidden = false;
+          formMessage.textContent = errorMessage;
+          formMessage.style.color = 'red';
+        }
+      }
+    };
+  </script>
 
   <script src="./js/main.js"></script>
 </body>
