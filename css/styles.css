@@ -176,7 +176,7 @@ img {
   background:
     radial-gradient(1200px 600px at 20% -10%, rgba(224, 185, 59, 0.2), transparent 60%),
     radial-gradient(800px 400px at 120% 10%, rgba(224, 185, 59, 0.15), transparent 55%),
-    url('../assets/hero.jpg') center bottom/cover no-repeat;
+    url('../assets/hero1.jpg') center bottom/cover no-repeat;
   overflow: hidden;
 }
 
