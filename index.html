@@ -16,6 +16,138 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    .location-link, .instagram-link {
+      color: inherit !important;
+      text-decoration: none;
+    }
+    .location-link:hover, .instagram-link:hover {
+      color: inherit !important;
+      text-decoration: underline;
+    }
+    .yellow-text {
+      color: #FFD700 !important; /* Amarillo */
+    }
+    .footer__grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .footer__section {
+      flex: 1;
+      min-width: 200px;
+    }
+    .footer__title {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .footer__list li {
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .footer__bottom {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    /* Enhanced Hero Animations */
+    .hero__content {
+      opacity: 0;
+      transform: translateY(60px) scale(0.95);
+      animation: heroFadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .hero__title {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: elementFadeIn 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+    }
+    .hero__subtitle {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: elementFadeIn 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+    }
+    .hero__cta {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: elementFadeIn 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+    }
+    .hero__cta .btn {
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .hero__cta .btn:hover {
+      transform: translateY(-3px);
+    }
+    @keyframes heroFadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes elementFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* Enhanced Scroll-to-Top Button */
+    .scroll-top-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #FFD700;
+      color: #000;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+    .scroll-top-btn.show {
+      opacity: 1;
+      visibility: visible;
+      animation: bounceIn 0.5s ease;
+    }
+    .scroll-top-btn:hover {
+      background-color: #FFC107;
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    @media (max-width: 768px) {
+      .scroll-top-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Contenedor de notificaciones toast -->
@@ -46,8 +178,10 @@
   <!-- Hero / Home -->
   <section class="hero" id="home" aria-labelledby="home-title">
     <div class="hero__overlay"></div>
-    <div class="container hero__content reveal">
-      <h1 class="hero__title" id="home-title">Bienvenidos a <span>1985 Bar</span></h1>
+    <div class="container hero__content">
+      <h1 class="hero__title" id="home-title">Bienvenidos a <span>
+        <br>
+        1985 Bar Coctelería</span></h1>
       <p class="hero__subtitle">Cócteles premium y eventos únicos en Las Parejas, Santa Fe.</p>
       <div class="hero__cta">
         <a href="#reservas" class="btn btn--gold" aria-label="Reservar una mesa ahora">Reservar</a>
@@ -66,7 +200,7 @@
         <p class="mt-8">
           <strong>Ubicación:</strong>
           <a href="https://www.google.com/maps/search/?api=1&query=Calle+20+957,+Las+Parejas,+Santa+Fe,+Argentina" target="_blank" rel="noopener noreferrer" class="location-link" aria-label="Ver ubicación en Google Maps">
-            <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Calle 20 Nro. 957
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span class="yellow-text">Calle 20 Nro. 957, Las Parejas</span>
           </a>
         </p>
         <br>
@@ -223,14 +357,14 @@
   <footer class="footer" id="contacto" aria-labelledby="contacto-title">
     <div class="container footer__grid">
       <!-- Sección de Contacto -->
-      <div class="footer__section footer__brand">
+      <div class="footer__section">
         <h3 class="footer__title" id="contacto-title">Contacto</h3>
         <address class="footer__list" aria-label="Información de contacto de 1985 Bar Coctelería">
           <ul class="footer__list">
             <li>
               <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-              <a href="https://www.google.com/maps/search/?api=1&query=Calle+20+957,+Las+Parejas,+Santa+Fe,+Argentina" target="_blank" rel="noopener noreferrer" aria-label="Ver ubicación en Google Maps">
-                Calle 20 Nro. 957
+              <a href="https://www.google.com/maps/search/?api=1&query=Calle+20+957,+Las+Parejas,+Santa+Fe,+Argentina" target="_blank" rel="noopener noreferrer" class="location-link" aria-label="Ver ubicación en Google Maps">
+                Calle 20 Nro. 957, Las Parejas
               </a>
             </li>
             <li>
@@ -238,17 +372,12 @@
               <a href="tel:+543471123456" aria-label="Llamar al número de contacto">+54 3471 123456</a>
             </li>
             <li>
-              <i class="fas fa-envelope" aria-hidden="true"></i>
-              <a href="mailto:info@1985bar.com" aria-label="Enviar correo a 1985 Bar Coctelería">info@1985bar.com</a>
-            </li>
-            <li>
               <i class="fab fa-instagram" aria-hidden="true"></i>
-              <a href="https://instagram.com/1985.bar.cocteleria" target="_blank" rel="noopener noreferrer" aria-label="Síguenos en Instagram">@1985.bar.cocteleria</a>
+              <a href="https://instagram.com/1985.bar.cocteleria" target="_blank" rel="noopener noreferrer" class="instagram-link" aria-label="Síguenos en Instagram">@1985.bar.cocteleria</a>
             </li>
           </ul>
         </address>
       </div>
-
       <!-- Sección de Horarios -->
       <div class="footer__section">
         <h3 class="footer__title">Horarios</h3>
@@ -258,28 +387,21 @@
           <li><i class="fas fa-clock" aria-hidden="true"></i> Domingo: 17:00 - 00:00</li>
         </ul>
       </div>
-
-      <!-- Sección de Enlaces -->
-      <div class="footer__section">
-        <h3 class="footer__title">Enlaces</h3>
-        <ul class="footer__list">
-          <li><i class="fas fa-link" aria-hidden="true"></i> <a href="#events" aria-label="Ver eventos">Eventos</a></li>
-          <li><i class="fas fa-link" aria-hidden="true"></i> <a href="#reservas" aria-label="Hacer una reserva">Reservas</a></li>
-          <li><i class="fas fa-link" aria-hidden="true"></i> <a href="#menu" aria-label="Ver la carta">Carta</a></li>
-        </ul>
-      </div>
     </div>
-
     <!-- Parte inferior del footer -->
     <div class="footer__bottom">
       <div class="container footer__bottom-content">
         <p class="footer__copyright">
           &copy; 2025 1985 Bar Coctelería. Todos los derechos reservados.
-          <a href="#politica-privacidad" aria-label="Leer la política de privacidad">Política de Privacidad</a>
         </p>
       </div>
     </div>
   </footer>
+
+  <!-- Botón de volver arriba -->
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Volver al inicio de la página">
+    <i class="fas fa-arrow-up"></i>
+  </button>
 
   <!-- Script de Firebase para manejar reservas -->
   <script type="module">
@@ -391,6 +513,26 @@
         }
       }
     };
+
+    // Script para el botón de volver arriba
+    document.addEventListener('DOMContentLoaded', () => {
+      const scrollTopBtn = document.getElementById('scrollTopBtn');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          scrollTopBtn.classList.add('show');
+        } else {
+          scrollTopBtn.classList.remove('show');
+        }
+      });
+
+      scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
   </script>
 
   <script src="./js/main.js"></script>
