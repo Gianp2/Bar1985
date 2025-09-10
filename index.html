@@ -273,83 +273,38 @@
       <div class="reveal">
         <h2 class="section__title" id="reservas-title">Reservas</h2>
         <p>Reserva tu mesa para una noche especial.</p>
-        <form id="reservaForm" class="form" aria-label="Formulario de reservas" >
+        <form id="reservaForm" class="form" aria-label="Formulario de reservas">
           <div class="form__row">
             <label for="nombre">Nombre</label>
-            <input 
-              id="nombre" 
-              name="nombre" 
-              type="text" 
-              placeholder="Tu nombre" 
-              required 
-              aria-required="true"
-              aria-describedby="nombre-error"
-            >
+            <input id="nombre" name="nombre" type="text" placeholder="Tu nombre" required aria-required="true" aria-describedby="nombre-error">
             <span id="nombre-error" class="error-message" hidden>Por favor, introduce tu nombre.</span>
           </div>
           <div class="form__row">
             <label for="telefono">Teléfono</label>
-            <input 
-              id="telefono" 
-              name="telefono" 
-              type="tel" 
-              placeholder="Ej: +543471123456" 
-              pattern="\+?[0-9]{10,15}" 
-              required 
-              aria-required="true"
-              aria-describedby="telefono-error"
-            >
+            <input id="telefono" name="telefono" type="tel" placeholder="Ej: +543471123456" pattern="\+?[0-9]{10,15}" required aria-required="true" aria-describedby="telefono-error">
             <span id="telefono-error" class="error-message" hidden>Por favor, introduce un número de teléfono válido.</span>
           </div>
           <div class="form__row">
             <label for="fecha">Fecha</label>
-            <input 
-              id="fecha" 
-              name="fecha" 
-              type="date" 
-              min="2025-09-09" 
-              required 
-              aria-required="true"
-              aria-describedby="fecha-error"
-            >
+            <input id="fecha" name="fecha" type="date" min="2025-09-10" required aria-required="true" aria-describedby="fecha-error">
             <span id="fecha-error" class="error-message" hidden>Por favor, selecciona una fecha válida.</span>
           </div>
           <div class="form__row">
             <label for="hora">Hora</label>
-            <input 
-              id="hora" 
-              name="hora" 
-              type="time" 
-              min="12:00" 
-              max="23:00" 
-              required 
-              aria-required="true"
-              aria-describedby="hora-error"
-            >
+            <input id="hora" name="hora" type="time" min="12:00" max="23:00" required aria-required="true" aria-describedby="hora-error">
             <span id="hora-error" class="error-message" hidden>Por favor, selecciona una hora válida.</span>
           </div>
           <div class="form__row">
             <label for="tipo">Tipo de reserva</label>
-            <select id="tipo" name="tipo" aria-label="Tipo de reserva" title="Tipo de reserva" >
+            <select id="tipo" name="tipo" aria-label="Tipo de reserva" title="Tipo de reserva">
               <option value="Cena">Cena</option>
               <option value="Cumpleaños">Cumpleaños</option>
               <option value="Evento">Evento</option>
             </select>
           </div>
-
           <div class="form__row">
             <label for="personas">Personas</label>
-            <input 
-              id="personas" 
-              name="personas" 
-              type="number" 
-              min="1" 
-              max="20" 
-              value="2" 
-              required 
-              aria-required="true"
-              aria-describedby="personas-error"
-            >
+            <input id="personas" name="personas" type="number" min="1" max="20" value="2" required aria-required="true" aria-describedby="personas-error">
             <span id="personas-error" class="error-message" hidden>Por favor, selecciona entre 1 y 20 personas.</span>
           </div>
           <button class="btn btn--gold" type="submit" aria-label="Enviar reserva">Reservar</button>
@@ -412,141 +367,7 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- Script de Firebase para manejar reservas -->
-  <script type="module">
-    // Importar módulos de Firebase (versión actualizada)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-    // Configuración de Firebase (usar la configuración de tu proyecto)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
-      authDomain: "bar1985-d34ea.firebaseapp.com",
-      projectId: "bar1985-d34ea",
-      storageBucket: "bar1985-d34ea.firebasestorage.app",
-      messagingSenderId: "1010372504350",
-      appId: "1:1010372504350:web:5b7a4f88bb6a52d270b70f",
-      measurementId: "G-1TEEFS4FL2"
-    };
-
-    // Inicializar Firebase y Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Función global para manejar el envío del formulario
-    window.handleSubmit = async function(event) {
-      event.preventDefault();
-      
-      const form = document.getElementById('reserva-form');
-      const formMessage = document.getElementById('form-message');
-      
-      if (!form) {
-        console.error('No se encontró el formulario #reserva-form');
-        return;
-      }
-
-      // Obtener valores del formulario
-      const nombre = form.nombre?.value?.trim() || '';
-      const telefono = form.telefono?.value?.trim() || '';
-      const fecha = form.fecha?.value || '';
-      const hora = form.hora?.value || '';
-      const personas = form.personas?.value || '';
-
-      // Validación básica
-      if (!nombre || !telefono || !fecha || !hora || !personas) {
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = 'Por favor, completa todos los campos.';
-          formMessage.style.color = 'red';
-        }
-        return;
-      }
-
-      // Validación adicional para el teléfono
-      const phoneRegex = /^\+?[0-9]{10,15}$/;
-      if (!phoneRegex.test(telefono)) {
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = 'Por favor, introduce un número de teléfono válido.';
-          formMessage.style.color = 'red';
-        }
-        return;
-      }
-
-      // Validación para el número de personas
-      const numPersonas = parseInt(personas, 10);
-      if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 20) {
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = 'Por favor, selecciona entre 1 y 20 personas.';
-          formMessage.style.color = 'red';
-        }
-        return;
-      }
-
-      try {
-        // Guardar la reserva en la colección 'reservas'
-        await addDoc(collection(db, 'reservas'), {
-          nombre,
-          telefono,
-          fecha,
-          hora,
-          personas: numPersonas,
-          tipo: tipo,
-          tipo: tipo,
-          tipo: tipo,
-          createdAt: serverTimestamp()
-        });
-
-        // Mostrar mensaje de éxito
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = '¡Reserva enviada con éxito!';
-          formMessage.style.color = 'green';
-        }
-
-        // Reiniciar el formulario
-        form.reset();
-      } catch (err) {
-        console.error('Error al guardar la reserva:', err);
-        let errorMessage = 'Ocurrió un error al guardar la reserva. Intenta de nuevo.';
-        
-        // Manejo de errores específicos de Firebase
-        if (err.code === 'permission-denied') {
-          errorMessage = 'No tienes permisos para guardar la reserva. Contacta al administrador.';
-        } else if (err.code === 'unavailable') {
-          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
-        }
-
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = errorMessage;
-          formMessage.style.color = 'red';
-        }
-      }
-    };
-
-    // Script para el botón de volver arriba
-    document.addEventListener('DOMContentLoaded', () => {
-      const scrollTopBtn = document.getElementById('scrollTopBtn');
-      
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-          scrollTopBtn.classList.add('show');
-        } else {
-          scrollTopBtn.classList.remove('show');
-        }
-      });
-
-      scrollTopBtn.addEventListener('click', () => {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      });
-    });
-  </script>
-
   <script src="./js/main.js"></script>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>
