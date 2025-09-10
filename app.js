@@ -13,10 +13,7 @@ function toast(msg, ok=true){
   setTimeout(()=> t.remove(), 3000);
 }
 
-const form = document.getElementById('reservaForm') || document.getElementById('reserva-form');
-// helper to get tipo
-function getTipoFromForm(f){ return (f && f.tipo && f.tipo.value) ? f.tipo.value : 'Cena'; }
-
+const form = document.getElementById('reservaForm');
 if(form){
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
@@ -27,7 +24,7 @@ if(form){
         telefono: data.telefono||'',
         fecha: data.fecha||'',
         hora: data.hora||'',
-        descripcion: data.descripcion||'',
+        tipodereserva: data.tipodereserva||'',
         createdAt: serverTimestamp()
       });
       form.reset();
