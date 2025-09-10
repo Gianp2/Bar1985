@@ -395,30 +395,9 @@
       </div>
     </div>
   </main>
-
-  <!-- Firebase SDK scripts -->
   <script type="module">
-    // Import Firebase modules from CDN
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-    import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+    import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, collection, query, orderBy, onSnapshot, doc, deleteDoc } from './firebase.js';
 
-    // Your Firebase configuration object
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Your existing code
     const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
     const loginArea = document.getElementById('loginArea');
     const adminArea = document.getElementById('adminArea');
@@ -471,7 +450,15 @@
         showToast('Ingreso exitoso', true);
       } catch (err) {
         console.error('Error al iniciar sesión:', err);
-        showToast(`Error: ${err.message}`, false);
+        let errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
+        if (err.code === 'auth/wrong-password') {
+          errorMessage = 'Contraseña incorrecta.';
+        } else if (err.code === 'auth/user-not-found') {
+          errorMessage = 'Usuario no encontrado.';
+        } else if (err.code === 'auth/api-key-not-valid.-please-pass-a-valid-api-key') {
+          errorMessage = 'Clave API no válida. Contacta al administrador.';
+        }
+        showToast(errorMessage, false);
       } finally {
         loginBtn.disabled = false;
         loginBtn.textContent = 'Ingresar';
