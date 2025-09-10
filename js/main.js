@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Exponer showToast globalmente
+  window.showToast = showToast;
+
   // --- Data (easy to update) ---
   const events = [
     {
@@ -144,49 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCards(pastas, 'pastas-list');
 
   // --- Reservas form ---
-  const form = document.getElementById('reserva-form');
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const nombre = form.nombre.value.trim();
-      const telefono = form.telefono.value.trim();
-      const fecha = form.fecha.value;
-      const hora = form.hora.value;
-      const personas = form.personas.value;
-      const formMessage = document.getElementById('form-message');
-
-      // Validar todos los campos
-      const inputs = form.querySelectorAll('input');
-      let isValid = true;
-
-      inputs.forEach(input => {
-        const errorElement = document.getElementById(`${input.id}-error`);
-        if (!input.checkValidity()) {
-          errorElement.hidden = false;
-          isValid = false;
-        } else {
-          errorElement.hidden = true;
-        }
-      });
-
-      if (!isValid) {
-        formMessage.hidden = false;
-        formMessage.textContent = 'Por favor, corrige los errores en el formulario.';
-        formMessage.style.color = 'red';
-        showToast({ title: 'Error', description: 'Completá todos los campos correctamente.', duration: 5000 });
-        return;
-      }
-
-      // Mostrar mensaje de éxito
-      const msg = `¡Reserva confirmada para ${nombre} (${telefono}) el ${new Date(fecha).toLocaleDateString()} a las ${hora} para ${personas} persona(s)!`;
-      formMessage.hidden = false;
-      formMessage.textContent = '¡Reserva enviada con éxito!';
-      formMessage.style.color = 'green';
-      showToast({ title: 'Reserva confirmada', description: msg, duration: 7000 });
-      form.reset();
-    });
-  }
 });
