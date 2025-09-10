@@ -1,4 +1,3 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { 
   getAuth, 
@@ -17,15 +16,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
+  apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs", // Reemplaza con la clave correcta desde Firebase Console
   authDomain: "bar1985-d34ea.firebaseapp.com",
   projectId: "bar1985-d34ea",
-  storageBucket: "bar1985-d34ea.appspot.com", // CORREGIDO
+  storageBucket: "bar1985-d34ea.appspot.com",
   messagingSenderId: "1010372504350",
   appId: "1:1010372504350:web:5b7a4f88bb6a52d270b70f",
   measurementId: "G-1TEEFS4FL2"
 };
-
 
 // Inicializamos Firebase
 const app = initializeApp(firebaseConfig);
