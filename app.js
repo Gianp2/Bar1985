@@ -1,115 +1,208 @@
-import { db, addDoc, collection, serverTimestamp } from './firebase.js';
+// admin.js
+import { 
+  auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, 
+  collection, query, orderBy, onSnapshot, doc, deleteDoc 
+} from './firebase.js';
 
-// Importar showToast desde main.js (asumiendo que está disponible globalmente)
-const showToast = window.showToast || function({ title = 'Listo', description = '', duration = 4000 } = {}) {
-  const container = document.getElementById('toast-container');
+// Configura el UID del admin
+const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
+
+// Elementos del DOM
+const loginArea = document.getElementById('loginArea');
+const adminArea = document.getElementById('adminArea');
+const userEmailSpan = document.getElementById('userEmail');
+const tblBody = document.querySelector('#tblReservas tbody');
+const loginForm = document.getElementById('loginForm');
+const loginBtn = document.getElementById('loginBtn');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const emailError = document.getElementById('emailError');
+const passwordError = document.getElementById('passwordError');
+const filterName = document.getElementById('filterName');
+const filterDate = document.getElementById('filterDate');
+const confirmModal = document.getElementById('confirmModal');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+const homeBtn = document.getElementById('homeBtn');
+
+let deleteDocId = null;
+
+// -----------------------
+// Toast notification
+// -----------------------
+function showToast(msg, isSuccess = true) {
   const toast = document.createElement('div');
-  toast.className = 'toast reveal visible';
-  toast.innerHTML = `
-    <div>
-      <p class="toast__title">${title}</p>
-      <p class="toast__desc">${description}</p>
-    </div>
-    <button class="toast__close" aria-label="Cerrar notificación">&times;</button>
-  `;
-  container.appendChild(toast);
+  toast.textContent = msg;
+  toast.className = `toast ${isSuccess ? 'success' : 'error'}`;
+  toast.setAttribute('role', 'alert');
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
 
-  const timer = setTimeout(() => toast.remove(), duration);
-  toast.querySelector('.toast__close').addEventListener('click', () => {
-    clearTimeout(timer);
-    toast.remove();
+// -----------------------
+// Login
+// -----------------------
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  emailError.textContent = '';
+  passwordError.textContent = '';
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email) { emailError.textContent = 'El correo es requerido'; return; }
+  if (!/\S+@\S+\.\S+/.test(email)) { emailError.textContent = 'Correo inválido'; return; }
+  if (!password) { passwordError.textContent = 'Contraseña requerida'; return; }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Cargando...';
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    showToast('Ingreso exitoso', true);
+  } catch (err) {
+    console.error(err);
+    let msg = 'Error al iniciar sesión';
+    if (err.code === 'auth/wrong-password') msg = 'Contraseña incorrecta';
+    else if (err.code === 'auth/user-not-found') msg = 'Usuario no encontrado';
+    showToast(msg, false);
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Ingresar';
+  }
+});
+
+// -----------------------
+// Logout
+// -----------------------
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  try {
+    await signOut(auth);
+    showToast('Sesión cerrada', true);
+  } catch (err) {
+    console.error(err);
+    showToast('Error al cerrar sesión', false);
+  }
+});
+
+// -----------------------
+// Redirigir al inicio
+// -----------------------
+homeBtn.addEventListener('click', () => window.location.href = './index.html');
+
+// -----------------------
+// Populate table
+// -----------------------
+function populateTable(snap) {
+  tblBody.innerHTML = '';
+  snap.forEach((docItem) => {
+    const r = docItem.data();
+    if (shouldDisplayRow(r)) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(r.nombre || '')}</td>
+        <td>${escapeHtml(r.telefono || '')}</td>
+        <td>${escapeHtml(r.fecha || '')}</td>
+        <td>${escapeHtml(r.hora || '')}</td>
+        <td>${escapeHtml(r.tipo || '')}</td>
+        <td><button class="action-btn" data-id="${docItem.id}" aria-label="Eliminar reserva">Eliminar</button></td>
+      `;
+      tblBody.appendChild(tr);
+    }
   });
-};
 
-const form = document.getElementById('reservaForm');
-const formMessage = document.getElementById('form-message');
-
-if (form) {
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Obtener valores del formulario
-    const nombre = form.nombre.value.trim();
-    const telefono = form.telefono.value.trim();
-    const fecha = form.fecha.value;
-    const hora = form.hora.value;
-    const tipo = form.tipo.value;
-    const personas = parseInt(form.personas.value, 10);
-
-    // Validar todos los campos
-    let isValid = true;
-    const inputs = form.querySelectorAll('input');
-    inputs.forEach(input => {
-      const errorElement = document.getElementById(`${input.id}-error`);
-      if (!input.checkValidity()) {
-        errorElement.hidden = false;
-        isValid = false;
-      } else {
-        errorElement.hidden = true;
-      }
+  // Botones de eliminar
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteDocId = btn.dataset.id;
+      confirmModal.style.display = 'flex';
+      confirmModal.setAttribute('aria-hidden', 'false');
+      confirmDeleteBtn.focus();
     });
-
-    // Validación adicional para el teléfono
-    const phoneRegex = /^\+?[0-9]{10,15}$/;
-    if (!phoneRegex.test(telefono)) {
-      document.getElementById('telefono-error').hidden = false;
-      isValid = false;
-    }
-
-    // Validación para el número de personas
-    if (isNaN(personas) || personas < 1 || personas > 20) {
-      document.getElementById('personas-error').hidden = false;
-      isValid = false;
-    }
-
-    if (!isValid) {
-      formMessage.hidden = false;
-      formMessage.textContent = 'Por favor, corrige los errores en el formulario.';
-      formMessage.style.color = 'red';
-      showToast({ title: 'Error', description: 'Completa todos los campos correctamente.', duration: 5000 });
-      return;
-    }
-
-    try {
-      // Guardar la reserva en Firestore
-      await addDoc(collection(db, 'reservas'), {
-        nombre,
-        telefono,
-        fecha,
-        hora,
-        tipo,
-        personas,
-        createdAt: serverTimestamp()
-      });
-
-      // Mostrar mensaje de éxito
-      const msg = `¡Reserva confirmada para ${nombre} (${telefono}) el ${new Date(fecha).toLocaleDateString()} a las ${hora} para ${personas} persona(s)!`;
-      formMessage.hidden = false;
-      formMessage.textContent = '¡Reserva enviada con éxito!';
-      formMessage.style.color = 'green';
-      showToast({ title: 'Reserva confirmada', description: msg, duration: 7000 });
-
-      // Reiniciar el formulario
-      form.reset();
-    } catch (err) {
-      console.error('Error al guardar la reserva:', err);
-      let errorMessage = 'Ocurrió un error al guardar la reserva. Intenta de nuevo.';
-      if (err.code === 'permission-denied') {
-        errorMessage = 'No tienes permisos para guardar la reserva. Contacta al administrador.';
-      } else if (err.code === 'unavailable') {
-        errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
-      }
-      formMessage.hidden = false;
-      formMessage.textContent = errorMessage;
-      formMessage.style.color = 'red';
-      showToast({ title: 'Error', description: errorMessage, duration: 5000 });
-    }
   });
 }
 
-// Admin button opens admin.html
-const adminBtn = document.getElementById('adminBtn');
-if (adminBtn) {
-  adminBtn.addEventListener('click', () => window.location.href = 'admin.html');
+// -----------------------
+// Filtrado
+// -----------------------
+function shouldDisplayRow(data) {
+  const nameFilter = filterName.value.trim().toLowerCase();
+  const dateFilter = filterDate.value;
+  const matchesName = !nameFilter || (data.nombre || '').toLowerCase().includes(nameFilter);
+  const matchesDate = !dateFilter || (data.fecha || '') === dateFilter;
+  return matchesName && matchesDate;
 }
 
+filterName.addEventListener('input', fetchAndPopulate);
+filterDate.addEventListener('change', fetchAndPopulate);
+
+function fetchAndPopulate() {
+  const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+  onSnapshot(q, snap => populateTable(snap));
+}
+
+// -----------------------
+// Modal eliminar
+// -----------------------
+confirmDeleteBtn.addEventListener('click', async () => {
+  if (deleteDocId) {
+    try {
+      await deleteDoc(doc(db, 'reservas', deleteDocId));
+      showToast('Reserva eliminada', true);
+    } catch (err) {
+      console.error(err);
+      showToast('Error al eliminar reserva', false);
+    }
+    deleteDocId = null;
+    confirmModal.style.display = 'none';
+    confirmModal.setAttribute('aria-hidden', 'true');
+  }
+});
+
+cancelDeleteBtn.addEventListener('click', () => {
+  deleteDocId = null;
+  confirmModal.style.display = 'none';
+  confirmModal.setAttribute('aria-hidden', 'true');
+});
+
+confirmModal.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    deleteDocId = null;
+    confirmModal.style.display = 'none';
+    confirmModal.setAttribute('aria-hidden', 'true');
+  }
+});
+
+// -----------------------
+// Observador de auth
+// -----------------------
+onAuthStateChanged(auth, (user) => {
+  if (user && user.uid === ADMIN_UID) {
+    loginArea.style.display = 'none';
+    adminArea.style.display = 'block';
+    userEmailSpan.textContent = user.email || 'Usuario';
+
+    const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+    onSnapshot(q, snap => populateTable(snap), err => {
+      console.error(err);
+      showToast('Error al cargar reservas', false);
+    });
+  } else {
+    loginArea.style.display = 'block';
+    adminArea.style.display = 'none';
+    confirmModal.style.display = 'none';
+  }
+});
+
+// -----------------------
+// Función para escapar HTML
+// -----------------------
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[c]);
+}
