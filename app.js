@@ -13,7 +13,10 @@ function toast(msg, ok=true){
   setTimeout(()=> t.remove(), 3000);
 }
 
-const form = document.getElementById('reservaForm');
+const form = document.getElementById('reservaForm') || document.getElementById('reserva-form');
+// helper to get tipo
+function getTipoFromForm(f){ return (f && f.tipo && f.tipo.value) ? f.tipo.value : 'Cena'; }
+
 if(form){
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
