@@ -273,7 +273,7 @@
       <div class="reveal">
         <h2 class="section__title" id="reservas-title">Reservas</h2>
         <p>Reserva tu mesa para una noche especial.</p>
-        <form id="reserva-form" class="form" aria-label="Formulario de reservas" onsubmit="handleSubmit(event)">
+        <form id="reservaForm" class="form" aria-label="Formulario de reservas" >
           <div class="form__row">
             <label for="nombre">Nombre</label>
             <input 
@@ -328,6 +328,15 @@
             >
             <span id="hora-error" class="error-message" hidden>Por favor, selecciona una hora válida.</span>
           </div>
+          <div class="form__row">
+            <label for="tipo">Tipo de reserva</label>
+            <select id="tipo" name="tipo" aria-label="Tipo de reserva" title="Tipo de reserva" >
+              <option value="Cena">Cena</option>
+              <option value="Cumpleaños">Cumpleaños</option>
+              <option value="Evento">Evento</option>
+            </select>
+          </div>
+
           <div class="form__row">
             <label for="personas">Personas</label>
             <input 
@@ -483,6 +492,9 @@
           fecha,
           hora,
           personas: numPersonas,
+          tipo: tipo,
+          tipo: tipo,
+          tipo: tipo,
           createdAt: serverTimestamp()
         });
 
