@@ -1,226 +1,609 @@
-// admin.js
-import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, collection, query, orderBy, onSnapshot, doc, deleteDoc } from './firebase.js';
-
-// Cambia este UID por el de tu administrador
-const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
-
-// Elementos del DOM
-const loginArea = document.getElementById('loginArea');
-const adminArea = document.getElementById('adminArea');
-const userEmailSpan = document.getElementById('userEmail');
-const tblBody = document.querySelector('#tblReservas tbody');
-
-const loginForm = document.getElementById('loginForm');
-const loginBtn = document.getElementById('loginBtn');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const emailError = document.getElementById('emailError');
-const passwordError = document.getElementById('passwordError');
-
-const filterName = document.getElementById('filterName');
-const filterDate = document.getElementById('filterDate');
-
-const confirmModal = document.getElementById('confirmModal');
-const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-
-const homeBtn = document.getElementById('homeBtn');
-
-let deleteDocId = null;
-
-// ---------------------------
-// Toast notification
-// ---------------------------
-function showToast(msg, isSuccess = true) {
-  const toast = document.createElement('div');
-  toast.textContent = msg;
-  toast.className = `toast ${isSuccess ? 'success' : 'error'}`;
-  toast.setAttribute('role', 'alert');
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-// ---------------------------
-// Escape HTML para seguridad
-// ---------------------------
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  })[c]);
-}
-
-// ---------------------------
-// Login form
-// ---------------------------
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  emailError.textContent = '';
-  passwordError.textContent = '';
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  if (!email) {
-    emailError.textContent = 'El correo electrónico es requerido';
-    return;
-  }
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    emailError.textContent = 'Ingrese un correo electrónico válido';
-    return;
-  }
-  if (!password) {
-    passwordError.textContent = 'La contraseña es requerida';
-    return;
-  }
-
-  loginBtn.disabled = true;
-  loginBtn.textContent = 'Cargando...';
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    showToast('Ingreso exitoso', true);
-  } catch (err) {
-    console.error('Error al iniciar sesión:', err);
-    let errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
-    if (err.code === 'auth/wrong-password') errorMessage = 'Contraseña incorrecta.';
-    else if (err.code === 'auth/user-not-found') errorMessage = 'Usuario no encontrado.';
-    else if (err.code === 'auth/api-key-not-valid.-please-pass-a-valid-api-key') errorMessage = 'Clave API no válida. Contacta al administrador.';
-    showToast(errorMessage, false);
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'Ingresar';
-  }
-});
-
-// ---------------------------
-// Logout
-// ---------------------------
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  try {
-    await signOut(auth);
-    showToast('Sesión cerrada', true);
-  } catch (err) {
-    console.error('Error al cerrar sesión:', err);
-    showToast('Error al cerrar sesión', false);
-  }
-});
-
-// ---------------------------
-// Home button
-// ---------------------------
-homeBtn.addEventListener('click', () => {
-  window.location.href = './index.html';
-});
-
-// ---------------------------
-// Populate table
-// ---------------------------
-function populateTable(snap) {
-  tblBody.innerHTML = '';
-  snap.forEach((doc) => {
-    const r = doc.data();
-    if (shouldDisplayRow(r)) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${escapeHtml(r.nombre || '')}</td>
-        <td>${escapeHtml(r.telefono || '')}</td>
-        <td>${escapeHtml(r.fecha || '')}</td>
-        <td>${escapeHtml(r.hora || '')}</td>
-        <td>${escapeHtml(r.tipo || '')}</td>
-        <td><button class="action-btn" data-id="${doc.id}" aria-label="Eliminar reserva">Eliminar</button></td>
-      `;
-      tblBody.appendChild(tr);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel de administración para gestionar reservas.">
+  <title>Panel de Administración</title>
+  <style>
+    :root {
+      --primary-color: #3b82f6; /* Blue for buttons */
+      --secondary-color: #1d4ed8; /* Darker blue for hover */
+      --text-color: #f9fafb; /* Light gray for text to contrast dark background */
+      --background-color: #1f2937; /* Dark gray background */
+      --card-background: #374151; /* Slightly lighter dark gray for cards */
+      --border-color: #4b5563; /* Gray for borders */
+      --shadow-color: rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+      --danger-color: #ef4444; /* Red for errors and delete buttons */
+      --success-color: #22c55e; /* Green for success messages */
+      --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --border-radius: 12px;
+      --padding-xs: 8px;
+      --padding-sm: 12px;
+      --padding-md: 16px;
+      --padding-lg: 24px;
+      --transition: all 0.2s ease-in-out;
     }
-  });
 
-  // Event listeners para botones eliminar
-  document.querySelectorAll('.action-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      deleteDocId = btn.dataset.id;
-      confirmModal.style.display = 'flex';
-      confirmModal.setAttribute('aria-hidden', 'false');
-      confirmDeleteBtn.focus();
-    });
-  });
-}
-
-// ---------------------------
-// Filtrado
-// ---------------------------
-function shouldDisplayRow(data) {
-  const nameFilter = filterName.value.trim().toLowerCase();
-  const dateFilter = filterDate.value;
-  const matchesName = !nameFilter || (data.nombre || '').toLowerCase().includes(nameFilter);
-  const matchesDate = !dateFilter || (data.fecha || '') === dateFilter;
-  return matchesName && matchesDate;
-}
-
-// ---------------------------
-// Eventos filtros
-// ---------------------------
-filterName.addEventListener('input', () => {
-  const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
-  onSnapshot(q, (snap) => populateTable(snap));
-});
-
-filterDate.addEventListener('change', () => {
-  const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
-  onSnapshot(q, (snap) => populateTable(snap));
-});
-
-// ---------------------------
-// Modal eliminar
-// ---------------------------
-confirmDeleteBtn.addEventListener('click', async () => {
-  if (deleteDocId) {
-    try {
-      await deleteDoc(doc(db, 'reservas', deleteDocId));
-      showToast('Reserva eliminada con éxito', true);
-    } catch (err) {
-      console.error('Error al eliminar reserva:', err);
-      showToast('Error al eliminar reserva', false);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    deleteDocId = null;
+
+    body {
+      font-family: var(--font-family);
+      background: var(--background-color);
+      color: var(--text-color);
+      padding: var(--padding-lg);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: var(--card-background);
+      padding: var(--padding-lg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px var(--shadow-color);
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: var(--padding-lg);
+      color: var(--text-color);
+      text-align: center;
+    }
+
+    input, button {
+      font-family: var(--font-family);
+      font-size: 0.95rem;
+      padding: var(--padding-sm) var(--padding-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      background: #4b5563; /* Darker input background for contrast */
+      color: var(--text-color);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--primary-color);
+      color: var(--text-color);
+      border: none;
+      font-weight: 600;
+      padding: var(--padding-sm) var(--padding-lg);
+      border-radius: var(--border-radius);
+    }
+
+    button:hover {
+      background: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      color: var(--danger-color);
+      font-size: 0.85rem;
+      margin-top: var(--padding-xs);
+      font-weight: 500;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      padding: var(--padding-sm) var(--padding-lg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      color: #ffffff;
+      font-weight: 500;
+      animation: slideIn 0.3s ease forwards, slideOut 0.3s ease 2.7s forwards;
+    }
+
+    .toast.success {
+      background: var(--success-color);
+    }
+
+    .toast.error {
+      background: var(--danger-color);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(100px); opacity: 0; }
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--padding-lg);
+      gap: var(--padding-md);
+      flex-wrap: wrap;
+    }
+
+    .admin-header p {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: var(--padding-sm);
+    }
+
+    .filter-container {
+      display: flex;
+      gap: var(--padding-sm);
+      margin-bottom: var(--padding-lg);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-container input {
+      flex: 1;
+      min-width: 160px;
+      max-width: 240px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-background);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      margin-bottom: var(--padding-lg);
+    }
+
+    th, td {
+      padding: var(--padding-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: #4b5563; /* Darker table header */
+      font-weight: 600;
+      color: var(--text-color);
+      transition: var(--transition);
+    }
+
+    th:hover {
+      background: #6b7280; /* Slightly lighter on hover */
+    }
+
+    td {
+      background: var(--card-background);
+      font-size: 0.9rem;
+    }
+
+    .action-btn {
+      background: var(--danger-color);
+      padding: var(--padding-xs) var(--padding-md);
+      font-size: 0.85rem;
+      border-radius: 8px;
+      color: #ffffff;
+    }
+
+    .action-btn:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-background);
+      padding: var(--padding-lg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content p {
+      margin-bottom: var(--padding-md);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: var(--padding-sm);
+      justify-content: center;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      max-width: 160px;
+    }
+
+    .modal-buttons .cancel-btn {
+      background: #6b7280;
+    }
+
+    .modal-buttons .cancel-btn:hover {
+      background: #4b5563;
+      transform: translateY(-1px);
+    }
+
+    .login-section {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: var(--padding-md);
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--padding-md);
+    }
+
+    .login-form div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: var(--padding-md);
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+
+      input, button {
+        font-size: 0.9rem;
+      }
+
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-container input {
+        max-width: 100%;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: var(--padding-sm);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .modal-content {
+        width: 95%;
+        padding: var(--padding-md);
+      }
+
+      .modal-buttons button {
+        padding: var(--padding-xs) var(--padding-md);
+        font-size: 0.9rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Panel de Administración</h1>
+    <section id="loginArea" class="login-section">
+      <form id="loginForm" class="login-form" novalidate>
+        <div>
+          <input id="email" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico">
+          <div id="emailError" class="error" role="alert"></div>
+        </div>
+        <div>
+          <input id="password" type="password" placeholder="Contraseña" required aria-label="Contraseña">
+          <div id="passwordError" class="error" role="alert"></div>
+        </div>
+        <button id="loginBtn" type="submit">Ingresar</button>
+      </form>
+    </section>
+    <section id="adminArea" style="display: none;">
+      <div class="admin-header">
+        <p>Conectado como <span id="userEmail"></span></p>
+        <div class="header-buttons">
+          <button id="homeBtn">Volver al Inicio</button>
+          <button id="logoutBtn">Cerrar sesión</button>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input id="filterName" type="text" placeholder="Filtrar por nombre" aria-label="Filtrar por nombre">
+        <input id="filterDate" type="date" aria-label="Filtrar por fecha">
+      </div>
+      <table id="tblReservas" aria-label="Lista de reservas">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Hora</th>
+            <th scope="col">Tipo de Reserva</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <div id="confirmModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+      <div class="modal-content">
+        <p id="modalTitle">¿Estás seguro de que deseas eliminar esta reserva?</p>
+        <div class="modal-buttons">
+          <button id="confirmDeleteBtn" aria-label="Confirmar eliminación">Eliminar</button>
+          <button id="cancelDeleteBtn" class="cancel-btn" aria-label="Cancelar eliminación">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, collection, query, orderBy, onSnapshot, doc, deleteDoc } from './firebase.js';
+
+    const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
+    const loginArea = document.getElementById('loginArea');
+    const adminArea = document.getElementById('adminArea');
+    const userEmailSpan = document.getElementById('userEmail');
+    const tblBody = document.querySelector('#tblReservas tbody');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const filterName = document.getElementById('filterName');
+    const filterDate = document.getElementById('filterDate');
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const homeBtn = document.getElementById('homeBtn');
+    let deleteDocId = null;
+
+    // Initialize modal state
     confirmModal.style.display = 'none';
-    confirmModal.setAttribute('aria-hidden', 'true');
-  }
-});
 
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteDocId = null;
-  confirmModal.style.display = 'none';
-  confirmModal.setAttribute('aria-hidden', 'true');
-});
+    // Form validation and login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      emailError.textContent = '';
+      passwordError.textContent = '';
 
-confirmModal.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    deleteDocId = null;
-    confirmModal.style.display = 'none';
-    confirmModal.setAttribute('aria-hidden', 'true');
-  }
-});
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
 
-// ---------------------------
-// Observador de sesión
-// ---------------------------
-onAuthStateChanged(auth, (user) => {
-  if (user && user.uid === ADMIN_UID) {
-    loginArea.style.display = 'none';
-    adminArea.style.display = 'block';
-    userEmailSpan.textContent = user.email || 'Usuario';
+      if (!email) {
+        emailError.textContent = 'El correo electrónico es requerido';
+        return;
+      }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        emailError.textContent = 'Ingrese un correo electrónico válido';
+        return;
+      }
+      if (!password) {
+        passwordError.textContent = 'La contraseña es requerida';
+        return;
+      }
 
-    const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
-    onSnapshot(q, (snap) => populateTable(snap), (err) => {
-      console.error('Error al cargar reservas:', err);
-      showToast('Error al cargar reservas', false);
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Cargando...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast('Ingreso exitoso', true);
+      } catch (err) {
+        console.error('Error al iniciar sesión:', err);
+        let errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
+        if (err.code === 'auth/wrong-password') {
+          errorMessage = 'Contraseña incorrecta.';
+        } else if (err.code === 'auth/user-not-found') {
+          errorMessage = 'Usuario no encontrado.';
+        } else if (err.code === 'auth/api-key-not-valid.-please-pass-a-valid-api-key') {
+          errorMessage = 'Clave API no válida. Contacta al administrador.';
+        }
+        showToast(errorMessage, false);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Ingresar';
+      }
     });
-  } else {
-    loginArea.style.display = 'block';
-    adminArea.style.display = 'none';
-    confirmModal.style.display = 'none';
-  }
-});
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        showToast('Sesión cerrada', true);
+      } catch (err) {
+        console.error('Error al cerrar sesión:', err);
+        showToast('Error al cerrar sesión', false);
+      }
+    });
+
+    // Home button redirect
+    homeBtn.addEventListener('click', () => {
+      window.location.href = './index.html';
+    });
+
+    // Populate table with filtered data
+    function populateTable(snap) {
+      tblBody.innerHTML = '';
+      snap.forEach((doc) => {
+        const r = doc.data();
+        if (shouldDisplayRow(r)) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${escapeHtml(r.nombre || '')}</td>
+            <td>${escapeHtml(r.telefono || '')}</td>
+            <td>${escapeHtml(r.fecha || '')}</td>
+            <td>${escapeHtml(r.hora || '')}</td>
+            <td>${escapeHtml(r.tipo || '')}</td>
+            <td><button class="action-btn" data-id="${doc.id}" aria-label="Eliminar reserva">Eliminar</button></td>
+          `;
+          tblBody.appendChild(tr);
+        }
+      });
+
+      // Add event listeners to delete buttons
+      document.querySelectorAll('.action-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          deleteDocId = btn.dataset.id;
+          confirmModal.style.display = 'flex';
+          confirmModal.setAttribute('aria-hidden', 'false');
+          confirmDeleteBtn.focus();
+        });
+      });
+    }
+
+    // Auth state observer
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.uid === ADMIN_UID) {
+        loginArea.style.display = 'none';
+        adminArea.style.display = 'block';
+        userEmailSpan.textContent = user.email || 'Usuario';
+
+        // Subscribe to reservas
+        const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+        onSnapshot(q, (snap) => {
+          populateTable(snap);
+        }, (err) => {
+          console.error('Error al cargar reservas:', err);
+          showToast('Error al cargar reservas', false);
+        });
+      } else {
+        loginArea.style.display = 'block';
+        adminArea.style.display = 'none';
+        confirmModal.style.display = 'none'; // Ensure modal is hidden on logout
+      }
+    });
+
+    // Filter function
+    function shouldDisplayRow(data) {
+      const nameFilter = filterName.value.trim().toLowerCase();
+      const dateFilter = filterDate.value;
+      const matchesName = !nameFilter || (data.nombre || '').toLowerCase().includes(nameFilter);
+      const matchesDate = !dateFilter || (data.fecha || '') === dateFilter;
+      return matchesName && matchesDate;
+    }
+
+    // Filter event listeners
+    filterName.addEventListener('input', () => {
+      const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+      onSnapshot(q, (snap) => populateTable(snap));
+    });
+
+    filterDate.addEventListener('change', () => {
+      const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
+      onSnapshot(q, (snap) => populateTable(snap));
+    });
+
+    // Modal event listeners
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (deleteDocId) {
+        try {
+          await deleteDoc(doc(db, 'reservas', deleteDocId));
+          showToast('Reserva eliminada con éxito', true);
+        } catch (err) {
+          console.error('Error al eliminar reserva:', err);
+          showToast('Error al eliminar reserva', false);
+        }
+        deleteDocId = null;
+        confirmModal.style.display = 'none';
+        confirmModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      deleteDocId = null;
+      confirmModal.style.display = 'none';
+      confirmModal.setAttribute('aria-hidden', 'true');
+    });
+
+    // Keyboard navigation for modal
+    confirmModal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        deleteDocId = null;
+        confirmModal.style.display = 'none';
+        confirmModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[c]);
+    }
+
+    // Toast notification
+    function showToast(msg, isSuccess = true) {
+      const toast = document.createElement('div');
+      toast.textContent = msg;
+      toast.className = `toast ${isSuccess ? 'success' : 'error'}`;
+      toast.setAttribute('role', 'alert');
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+</html>
