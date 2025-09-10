@@ -9,19 +9,20 @@ import {
   getFirestore, 
   collection, 
   addDoc, 
+  getDocs, 
   deleteDoc, 
   doc, 
-  getDocs, 
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD0dfRMXPv35Qpe54P3xezjt4OAACM9Flc",
-  authDomain: "peluqueriambs.firebaseapp.com",
-  projectId: "peluqueriambs",
-  storageBucket: "peluqueriambs.appspot.com",
-  messagingSenderId: "67130614111",
-  appId: "1:67130614111:web:3e84f8b2e352b9fa59c6b4"
+  apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
+  authDomain: "bar1985-d34ea.firebaseapp.com",
+  projectId: "bar1985-d34ea",
+  storageBucket: "bar1985-d34ea.firebasestorage.app",
+  messagingSenderId: "1010372504350",
+  appId: "1:1010372504350:web:5b7a4f88bb6a52d270b70f",
+  measurementId: "G-1TEEFS4FL2"
 };
 
 // Inicializamos Firebase
@@ -29,4 +30,4 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { app, auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged, collection, addDoc, deleteDoc, doc, getDocs, serverTimestamp };
+export { app, auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp };
