@@ -533,6 +533,36 @@ input:focus, textarea:focus {
   font-size: 0.9rem;
 }
 
+/* === Botón Scroll to Top === */
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  display: none; /* Inicialmente oculto */
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  z-index: 1000;
+  font-size: 1.2rem;
+}
+
+.scroll-to-top:hover {
+  box-shadow: var(--shadow-hover);
+  transform: scale(1.05);
+}
+
+.scroll-to-top.show {
+  display: flex;
+}
+
 /* === Media Queries para responsividad === */
 @media (max-width: 1024px) {
   .grid-2 {
@@ -618,6 +648,13 @@ input:focus, textarea:focus {
     font-size: 0.9rem;
     min-width: 80px;
     text-align: center;
+  }
+
+  .scroll-to-top {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 45px;
+    height: 45px;
   }
 }
 
