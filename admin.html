@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-device-width, initial-scale=1.0">
   <meta name="description" content="Panel de administración para gestionar reservas.">
   <title>Panel de Administración</title>
   <style>
@@ -40,20 +40,21 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       width: 100%;
       background: var(--card-background);
       padding: var(--padding-lg);
       border-radius: var(--border-radius);
       box-shadow: 0 10px 30px var(--shadow-color);
+      margin: 0 auto;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 5vw, 2rem);
       font-weight: 700;
       margin-bottom: var(--padding-lg);
       color: var(--text-color);
@@ -62,13 +63,14 @@
 
     input, button {
       font-family: var(--font-family);
-      font-size: 0.95rem;
+      font-size: clamp(0.85rem, 2.5vw, 0.95rem);
       padding: var(--padding-sm) var(--padding-md);
       border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
       transition: var(--transition);
-      background: #4b5563; /* Darker input background for contrast */
+      background: #4b5563;
       color: var(--text-color);
+      width: 100%;
     }
 
     input:focus {
@@ -104,7 +106,7 @@
 
     .error {
       color: var(--danger-color);
-      font-size: 0.85rem;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
       margin-top: var(--padding-xs);
       font-weight: 500;
     }
@@ -112,7 +114,7 @@
     .toast {
       position: fixed;
       bottom: 32px;
-      right: 32px;
+      right: 16px;
       padding: var(--padding-sm) var(--padding-lg);
       border-radius: var(--border-radius);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
@@ -120,6 +122,7 @@
       color: #ffffff;
       font-weight: 500;
       animation: slideIn 0.3s ease forwards, slideOut 0.3s ease 2.7s forwards;
+      max-width: 90%;
     }
 
     .toast.success {
@@ -150,13 +153,14 @@
     }
 
     .admin-header p {
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
       font-weight: 500;
     }
 
     .header-buttons {
       display: flex;
       gap: var(--padding-sm);
+      flex-wrap: wrap;
     }
 
     .filter-container {
@@ -170,7 +174,7 @@
     .filter-container input {
       flex: 1;
       min-width: 160px;
-      max-width: 240px;
+      max-width: 100%;
     }
 
     table {
@@ -189,27 +193,29 @@
     }
 
     th {
-      background: #4b5563; /* Darker table header */
+      background: #4b5563;
       font-weight: 600;
       color: var(--text-color);
       transition: var(--transition);
     }
 
     th:hover {
-      background: #6b7280; /* Slightly lighter on hover */
+      background: #6b7280;
     }
 
     td {
       background: var(--card-background);
-      font-size: 0.9rem;
+      font-size: clamp(0.8rem, 2.5vw, 0.9rem);
     }
 
     .action-btn {
       background: var(--danger-color);
       padding: var(--padding-xs) var(--padding-md);
-      font-size: 0.85rem;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
       border-radius: 8px;
       color: #ffffff;
+      width: 100%;
+      max-width: 120px;
     }
 
     .action-btn:hover {
@@ -224,10 +230,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+      background: rgba(0, 0, 0, 0.7);
       z-index: 2000;
       justify-content: center;
       align-items: center;
+      padding: var(--padding-sm);
     }
 
     .modal-content {
@@ -235,8 +242,8 @@
       padding: var(--padding-lg);
       border-radius: var(--border-radius);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      max-width: 480px;
-      width: 90%;
+      max-width: 90%;
+      width: 480px;
       text-align: center;
       animation: scaleIn 0.3s ease;
     }
@@ -248,7 +255,7 @@
 
     .modal-content p {
       margin-bottom: var(--padding-md);
-      font-size: 1.1rem;
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
       font-weight: 500;
       color: var(--text-color);
     }
@@ -257,6 +264,7 @@
       display: flex;
       gap: var(--padding-sm);
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .modal-buttons button {
@@ -290,17 +298,34 @@
       flex-direction: column;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .container {
+        max-width: 90%;
         padding: var(--padding-md);
       }
 
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: var(--padding-md);
+      }
+
+      .container {
+        padding: var(--padding-sm);
+      }
+
       h1 {
-        font-size: 1.75rem;
+        font-size: clamp(1.25rem, 4vw, 1.75rem);
       }
 
       input, button {
-        font-size: 0.9rem;
+        font-size: clamp(0.8rem, 2.5vw, 0.9rem);
       }
 
       .admin-header {
@@ -318,7 +343,7 @@
       }
 
       table {
-        font-size: 0.85rem;
+        font-size: clamp(0.75rem, 2vw, 0.85rem);
       }
 
       th, td {
@@ -327,6 +352,14 @@
     }
 
     @media (max-width: 480px) {
+      body {
+        padding: var(--padding-sm);
+      }
+
+      .container {
+        padding: var(--padding-xs);
+      }
+
       .modal-content {
         width: 95%;
         padding: var(--padding-md);
@@ -334,11 +367,17 @@
 
       .modal-buttons button {
         padding: var(--padding-xs) var(--padding-md);
-        font-size: 0.9rem;
+        font-size: clamp(0.8rem, 2.5vw, 0.9rem);
       }
 
       h1 {
-        font-size: 1.5rem;
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
+      }
+
+      .toast {
+        bottom: 16px;
+        right: 8px;
+        max-width: 95%;
       }
     }
   </style>
@@ -529,7 +568,7 @@
       } else {
         loginArea.style.display = 'block';
         adminArea.style.display = 'none';
-        confirmModal.style.display = 'none'; // Ensure modal is hidden on logout
+        confirmModal.style.display = 'none';
       }
     });
 
