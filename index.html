@@ -93,7 +93,7 @@
         transform: translateY(0);
       }
     }
-    /* Enhanced Scroll-to-Top Button */
+    /* Enhanced Scroll-to-Top Button - Fixed positioning and behavior */
     .scroll-top-btn {
       position: fixed;
       bottom: 30px;
@@ -113,6 +113,7 @@
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       z-index: 1000;
+      border: none; /* Ensure no border adds width */
     }
     .scroll-top-btn.show {
       opacity: 1;
@@ -202,6 +203,23 @@
       transform: translateY(-3px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
+    /* Fix for horizontal scroll - Ensure no overflow */
+    body {
+      overflow-x: hidden;
+    }
+    .container {
+      overflow-x: hidden;
+    }
+    .nav {
+      overflow-x: hidden;
+    }
+    .nav-links {
+      overflow-x: hidden;
+    }
+    .tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
   </style>
 </head>
 <body>
@@ -212,7 +230,7 @@
   <header class="header fade-in-slide" id="top" aria-label="Navegación principal">
     <div class="container nav">
       <a class="logo" href="#top" aria-label="Inicio de 1985 Bar Coctelería">
-        <img src="./assets/logo.jpg" srcset="./assets/logo.jpg 1x, ./assets/logo-sm.jpg 0.5x" alt="Logo de 1985 Bar Coctelería">
+        <img src="./assets/logo.jpg" srcset="./assets/logo.jpg 1x, ./assets/logo-sm.jpg 0.5x" alt="Logo de 1985 Bar Coctelería" style="max-width: 100%; height: auto;">
         <span>1985 Bar Coctelería</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Menú principal">
@@ -269,7 +287,7 @@
         </ul>
       </div>
       <div class="about__image reveal fade-in-right">
-        <img src="./assets/barman.jpg" srcset="./assets/barman.jpg 1x, ./assets/barman-sm.jpg 0.5x" alt="Barman preparando un cóctel en 1985 Bar Coctelería">
+        <img src="./assets/barman.jpg" srcset="./assets/barman.jpg 1x, ./assets/barman-sm.jpg 0.5x" alt="Barman preparando un cóctel en 1985 Bar Coctelería" style="max-width: 100%; height: auto;">
       </div>
     </div>
   </section>
@@ -586,12 +604,21 @@
     document.addEventListener('DOMContentLoaded', () => {
       const scrollTopBtn = document.getElementById('scrollTopBtn');
       
-      // Scroll-to-top button logic
-      window.addEventListener('scroll', () => {
+      // Scroll-to-top button logic - Fixed to hide on scroll up to 0
+      let ticking = false;
+      function updateScrollBtn() {
         if (window.scrollY > 300) {
           scrollTopBtn.classList.add('show');
         } else {
           scrollTopBtn.classList.remove('show');
+        }
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(updateScrollBtn);
+          ticking = true;
         }
       });
 
