@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
   <title>1985 Bar Coctelería | Las Parejas, Santa Fe</title>
   <meta name="description" content="Cócteles premium, cervezas artesanales y comida casual en 1985 Bar Coctelería, Las Parejas, Santa Fe. Reserva tu mesa ahora.">
   <meta name="keywords" content="bar, coctelería, Las Parejas, Santa Fe, cócteles, cervezas artesanales, eventos, reservas">
@@ -26,7 +26,7 @@
       text-decoration: underline;
     }
     .yellow-text {
-      color: #FFD700 !important;
+      color: #FFD700 !important; /* Amarillo */
     }
     .footer__grid {
       display: flex;
@@ -54,6 +54,7 @@
       margin-top: 2rem;
       text-align: center;
     }
+    /* Enhanced Hero Animations */
     .hero__content {
       opacity: 0;
       transform: translateY(60px) scale(0.95);
@@ -92,6 +93,7 @@
         transform: translateY(0);
       }
     }
+    /* Enhanced Scroll-to-Top Button */
     .scroll-top-btn {
       position: fixed;
       bottom: 30px;
@@ -145,58 +147,6 @@
         right: 20px;
       }
     }
-    .fade-in-slide {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .fade-in-slide.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .fade-in-scale {
-      opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .fade-in-scale.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-    .fade-in-left {
-      opacity: 0;
-      transform: translateX(-30px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .fade-in-left.visible {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .fade-in-right {
-      opacity: 0;
-      transform: translateX(30px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .fade-in-right.visible {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .staggered-item {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .staggered-item.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .btn, .tab {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .btn:hover, .tab:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
   </style>
 </head>
 <body>
@@ -204,20 +154,20 @@
   <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Header -->
-  <header class="header fade-in-slide" id="top" aria-label="Navegación principal">
+  <header class="header" id="top" aria-label="Navegación principal">
     <div class="container nav">
       <a class="logo" href="#top" aria-label="Inicio de 1985 Bar Coctelería">
         <img src="./assets/logo.jpg" srcset="./assets/logo.jpg 1x, ./assets/logo-sm.jpg 0.5x" alt="Logo de 1985 Bar Coctelería">
         <span>1985 Bar Coctelería</span>
       </a>
       <nav class="nav-links" id="nav-links" aria-label="Menú principal">
-        <a href="#home" aria-current="page" class="staggered-item">Inicio</a>
-        <a href="#about" class="staggered-item">Nosotros</a>
-        <a href="#events" class="staggered-item">Eventos</a>
-        <a href="#menu" class="staggered-item">Carta</a>
-        <a href="#contacto" class="staggered-item">Contacto</a>
-        <a href="#reservas" class="btn btn--gold staggered-item" aria-label="Hacer una reserva">Reservas</a>
-        <a href="./admin.html" class="btn btn--outline staggered-item" aria-label="Acceder al panel de administración">Admin</a>
+        <a href="#home" aria-current="page">Inicio</a>
+        <a href="#about">Nosotros</a>
+        <a href="#events">Eventos</a>
+        <a href="#menu">Carta</a>
+        <a href="#contacto">Contacto</a>
+        <a href="#reservas" class="btn btn--gold" aria-label="Hacer una reserva">Reservas</a>
+        <a href="./admin.html" class="btn btn--outline" aria-label="Acceder al panel de administración">Admin</a>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="Abrir menú de navegación" aria-controls="nav-links" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -227,15 +177,12 @@
 
   <!-- Hero / Home -->
   <section class="hero" id="home" aria-labelledby="home-title">
-    <video class="hero__video" autoplay muted loop playsinline aria-hidden="true">
-      <source src="../assets/videohero2.mp4" type="video/mp4">
-      <source src="../assets/videohero2.webm" type="video/webm">
-      <img src="../assets/fallback-hero.jpg" alt="Imagen de respaldo para el video del hero">
-    </video>
     <div class="hero__overlay"></div>
     <div class="container hero__content">
-      <h1 class="hero__title" id="home-title">Descubre el Sabor Auténtico de <span>1985 Bar Coctelería</span></h1>
-      <p class="hero__subtitle">Cócteles artesanales, cervezas premium y noches inolvidables en Las Parejas, Santa Fe.</p>
+      <h1 class="hero__title" id="home-title">Bienvenidos a <span>
+        <br>
+        1985 Bar Coctelería</span></h1>
+      <p class="hero__subtitle">Cócteles premium y eventos únicos en Las Parejas, Santa Fe.</p>
       <div class="hero__cta">
         <a href="#reservas" class="btn btn--gold" aria-label="Reservar una mesa ahora">Reservar</a>
         <a href="#menu" class="btn btn--outline" aria-label="Ver la carta del bar">Carta</a>
@@ -244,13 +191,13 @@
   </section>
 
   <!-- Sobre Nosotros -->
-  <section class="section fade-in-slide" id="about" aria-labelledby="about-title">
+  <section class="section" id="about" aria-labelledby="about-title">
     <div class="container grid-2">
-      <div class="reveal fade-in-left">
+      <div class="reveal">
         <h2 class="section__title" id="about-title">Sobre Nosotros</h2>
-        <p class="staggered-item">1985 Bar Coctelería es el corazón de Las Parejas. Disfruta de nuestro <strong>Gin de Uva</strong>, cervezas artesanales y hamburguesas en un ambiente vibrante.</p>
+        <p>1985 Bar Coctelería es el corazón de Las Parejas. Disfruta de nuestro <strong>Gin de Uva</strong>, cervezas artesanales y hamburguesas en un ambiente vibrante.</p>
         <br>
-        <p class="mt-8 staggered-item">
+        <p class="mt-8">
           <strong>Ubicación:</strong>
           <a href="https://www.google.com/maps/search/?api=1&query=Calle+20+957,+Las+Parejas,+Santa+Fe,+Argentina" target="_blank" rel="noopener noreferrer" class="location-link" aria-label="Ver ubicación en Google Maps">
             <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span class="yellow-text">Calle 20 Nro. 957, Las Parejas</span>
@@ -258,130 +205,96 @@
         </p>
         <br>
         <ul class="bullets mt-8">
-          <li class="staggered-item">Experiencia única</li>
-          <li class="staggered-item">Calidad en bebidas</li>
-          <li class="staggered-item">Ambiente vibrante</li>
+          <li>Experiencia única</li>
+          <li>Calidad en bebidas</li>
+          <li>Ambiente vibrante</li>
         </ul>
       </div>
-      <div class="about__image reveal fade-in-right">
+      <div class="about__image reveal">
         <img src="./assets/barman.jpg" srcset="./assets/barman.jpg 1x, ./assets/barman-sm.jpg 0.5x" alt="Barman preparando un cóctel en 1985 Bar Coctelería">
       </div>
     </div>
   </section>
 
   <!-- Eventos -->
-  <section class="section section--alt fade-in-slide" id="events" aria-labelledby="events-title">
+  <section class="section section--alt" id="events" aria-labelledby="events-title">
     <div class="container">
-      <h2 class="section__title fade-in-scale" id="events-title">Eventos</h2>
-      <p class="section__subtitle staggered-item">
+      <h2 class="section__title" id="events-title">Eventos</h2>
+      <p class="section__subtitle">
         Síguenos en
         <a href="https://instagram.com/1985.bar.cocteleria" target="_blank" rel="noopener noreferrer" class="instagram-link" aria-label="Síguenos en Instagram para actualizaciones de eventos">
           <i class="fab fa-instagram" aria-hidden="true"></i> Instagram
         </a> para no perderte nada.
       </p>
       <div id="events-list" class="cards" role="region" aria-live="polite"></div>
-      <div id="events-message" class="center mt-8 staggered-item" role="alert" aria-live="assertive" style="display: none;">
+      <div id="events-message" class="center mt-8" role="alert" aria-live="assertive" style="display: none;">
         <p class="toast__desc">Cargando eventos...</p>
       </div>
       <br>
       <div class="center mt-24">
-        <a href="#reservas" class="btn btn--gold staggered-item" role="button" aria-label="Reservar una mesa para un evento">Reservar Mesa</a>
+        <a href="#reservas" class="btn btn--gold" role="button" aria-label="Reservar una mesa para un evento">Reservar Mesa</a>
       </div>
     </div>
   </section>
 
   <!-- Carta -->
-  <section class="section fade-in-slide" id="menu" aria-labelledby="menu-title">
+  <section class="section" id="menu" aria-labelledby="menu-title">
     <div class="container">
-      <h2 class="section__title fade-in-scale" id="menu-title">Carta</h2>
-      <p class="section__subtitle staggered-item">Explora nuestra selección de bebidas y platos.</p>
+      <h2 class="section__title" id="menu-title">Carta</h2>
+      <p class="section__subtitle">Explora nuestra selección de bebidas y platos.</p>
       <nav class="tabs" aria-label="Categorías de la carta">
-        <button class="tab active staggered-item" data-tab="bebidas" aria-selected="true" id="bebidas-tab">Bebidas</button>
-        <button class="tab staggered-item" data-tab="tragos" aria-selected="false" id="tragos-tab">Tragos</button>
-        <button class="tab staggered-item" data-tab="picadas" aria-selected="false" id="picadas-tab">Picadas</button>
-        <button class="tab staggered-item" data-tab="platos" aria-selected="false" id="platos-tab">Platos</button>
-        <button class="tab staggered-item" data-tab="pastas" aria-selected="false" id="pastas-tab">Pastas</button>
+        <button class="tab active" data-tab="bebidas" aria-selected="true" id="bebidas-tab">Bebidas</button>
+        <button class="tab" data-tab="tragos" aria-selected="false" id="tragos-tab">Tragos</button>
+        <button class="tab" data-tab="picadas" aria-selected="false" id="picadas-tab">Picadas</button>
+        <button class="tab" data-tab="platos" aria-selected="false" id="platos-tab">Platos</button>
+        <button class="tab" data-tab="pastas" aria-selected="false" id="pastas-tab">Pastas</button>
       </nav>
-      <div id="bebidas" class="tab-panel active fade-in-scale" role="tabpanel" aria-labelledby="bebidas-tab">
+      <div id="bebidas" class="tab-panel active" role="tabpanel" aria-labelledby="bebidas-tab">
         <div id="drinks-list" class="cards"></div>
       </div>
-      <div id="tragos" class="tab-panel fade-in-scale" role="tabpanel" aria-labelledby="tragos-tab">
+      <div id="tragos" class="tab-panel" role="tabpanel" aria-labelledby="tragos-tab">
         <div id="cocktails-list" class="cards"></div>
       </div>
-      <div id="picadas" class="tab-panel fade-in-scale" role="tabpanel" aria-labelledby="picadas-tab">
+      <div id="picadas" class="tab-panel" role="tabpanel" aria-labelledby="picadas-tab">
         <div id="appetizers-list" class="cards"></div>
       </div>
-      <div id="platos" class="tab-panel fade-in-scale" role="tabpanel" aria-labelledby="platos-tab">
+      <div id="platos" class="tab-panel" role="tabpanel" aria-labelledby="platos-tab">
         <div id="dishes-list" class="cards"></div>
       </div>
-      <div id="pastas" class="tab-panel fade-in-scale" role="tabpanel" aria-labelledby="pastas-tab">
+      <div id="pastas" class="tab-panel" role="tabpanel" aria-labelledby="pastas-tab">
         <div id="pastas-list" class="cards"></div>
       </div>
     </div>
   </section>
 
   <!-- Reservas -->
-  <section class="section section--alt fade-in-slide" id="reservas" aria-labelledby="reservas-title">
+  <section class="section section--alt" id="reservas" aria-labelledby="reservas-title">
     <div class="container grid-2">
-      <div class="reveal fade-in-left">
+      <div class="reveal">
         <h2 class="section__title" id="reservas-title">Reservas</h2>
-        <p class="staggered-item">Reserva tu mesa para una noche especial.</p>
+        <p>Reserva tu mesa para una noche especial.</p>
         <form id="reservaForm" class="form" aria-label="Formulario de reservas">
-          <div class="form__row staggered-item">
+          <div class="form__row">
             <label for="nombre">Nombre</label>
-            <input 
-              id="nombre" 
-              name="nombre" 
-              type="text" 
-              placeholder="Tu nombre" 
-              required 
-              aria-required="true"
-              aria-describedby="nombre-error"
-            >
+            <input id="nombre" name="nombre" type="text" placeholder="Tu nombre" required aria-required="true" aria-describedby="nombre-error">
             <span id="nombre-error" class="error-message" hidden>Por favor, introduce tu nombre.</span>
           </div>
-          <div class="form__row staggered-item">
+          <div class="form__row">
             <label for="telefono">Teléfono</label>
-            <input 
-              id="telefono" 
-              name="telefono" 
-              type="tel" 
-              placeholder="Ej: +543471123456" 
-              pattern="\+?[0-9]{10,15}" 
-              required 
-              aria-required="true"
-              aria-describedby="telefono-error"
-            >
+            <input id="telefono" name="telefono" type="tel" placeholder="Ej: +543471123456" pattern="\+?[0-9]{10,15}" required aria-required="true" aria-describedby="telefono-error">
             <span id="telefono-error" class="error-message" hidden>Por favor, introduce un número de teléfono válido.</span>
           </div>
-          <div class="form__row staggered-item">
+          <div class="form__row">
             <label for="fecha">Fecha</label>
-            <input 
-              id="fecha" 
-              name="fecha" 
-              type="date" 
-              min="2025-09-09" 
-              required 
-              aria-required="true"
-              aria-describedby="fecha-error"
-            >
+            <input id="fecha" name="fecha" type="date" min="2025-09-10" required aria-required="true" aria-describedby="fecha-error">
             <span id="fecha-error" class="error-message" hidden>Por favor, selecciona una fecha válida.</span>
           </div>
-          <div class="form__row staggered-item">
+          <div class="form__row">
             <label for="hora">Hora</label>
-            <input 
-              id="hora" 
-              name="hora" 
-              type="time" 
-              min="12:00" 
-              max="23:00" 
-              required 
-              aria-required="true"
-              aria-describedby="hora-error"
-            >
+            <input id="hora" name="hora" type="time" min="12:00" max="23:00" required aria-required="true" aria-describedby="hora-error">
             <span id="hora-error" class="error-message" hidden>Por favor, selecciona una hora válida.</span>
           </div>
-          <div class="form__row staggered-item">
+          <div class="form__row">
             <label for="tipo">Tipo de reserva</label>
             <select id="tipo" name="tipo" aria-label="Tipo de reserva" title="Tipo de reserva">
               <option value="Cena">Cena</option>
@@ -389,67 +302,60 @@
               <option value="Evento">Evento</option>
             </select>
           </div>
-          <div class="form__row staggered-item">
+          <div class="form__row">
             <label for="personas">Personas</label>
-            <input 
-              id="personas" 
-              name="personas" 
-              type="number" 
-              min="1" 
-              max="20" 
-              value="2" 
-              required 
-              aria-required="true"
-              aria-describedby="personas-error"
-            >
+            <input id="personas" name="personas" type="number" min="1" max="20" value="2" required aria-required="true" aria-describedby="personas-error">
             <span id="personas-error" class="error-message" hidden>Por favor, selecciona entre 1 y 20 personas.</span>
           </div>
-          <button class="btn btn--gold staggered-item" type="submit" aria-label="Enviar reserva">Reservar</button>
-          <p id="form-message" class="form-message staggered-item" hidden></p>
+          <button class="btn btn--gold" type="submit" aria-label="Enviar reserva">Reservar</button>
+          <p id="form-message" class="form-message" hidden></p>
         </form>
       </div>
-      <div class="reveal reservas__image fade-in-right">
+      <div class="reveal reservas__image">
         <!-- Aquí puedes agregar una imagen si es necesario -->
       </div>
     </div>
   </section>
 
   <!-- Footer / Contacto -->
-  <footer class="footer fade-in-slide" id="contacto" aria-labelledby="contacto-title">
+  <footer class="footer" id="contacto" aria-labelledby="contacto-title">
     <div class="container footer__grid">
-      <div class="footer__section fade-in-left">
+      <!-- Sección de Contacto -->
+      <div class="footer__section">
         <h3 class="footer__title" id="contacto-title">Contacto</h3>
         <address class="footer__list" aria-label="Información de contacto de 1985 Bar Coctelería">
           <ul class="footer__list">
-            <li class="staggered-item">
+            <li>
               <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
               <a href="https://www.google.com/maps/search/?api=1&query=Calle+20+957,+Las+Parejas,+Santa+Fe,+Argentina" target="_blank" rel="noopener noreferrer" class="location-link" aria-label="Ver ubicación en Google Maps">
                 Calle 20 Nro. 957, Las Parejas
               </a>
             </li>
-            <li class="staggered-item">
+            <li>
               <i class="fas fa-phone" aria-hidden="true"></i>
               <a href="tel:+543471123456" aria-label="Llamar al número de contacto">+54 3471 123456</a>
             </li>
-            <li class="staggered-item">
+            <li>
               <i class="fab fa-instagram" aria-hidden="true"></i>
               <a href="https://instagram.com/1985.bar.cocteleria" target="_blank" rel="noopener noreferrer" class="instagram-link" aria-label="Síguenos en Instagram">@1985.bar.cocteleria</a>
             </li>
           </ul>
         </address>
       </div>
-      <div class="footer__section fade-in-right">
+      <!-- Sección de Horarios -->
+      <div class="footer__section">
         <h3 class="footer__title">Horarios</h3>
         <ul class="footer__list">
-          <li class="staggered-item"><i class="fas fa-clock" aria-hidden="true"></i> Lunes a Jueves: 18:00 - 01:00</li>
-          <li class="staggered-item"><i class="fas fa-clock" aria-hidden="true"></i> Viernes y Sábado: 18:00 - 03:00</li>
-          <li class="staggered-item"><i class="fas fa-clock" aria-hidden="true"></i> Domingo: 17:00 - 00:00</li>
+          <li><i class="fas fa-clock" aria-hidden="true"></i> Lunes a Jueves: 18:00 - 01:00</li>
+          <li><i class="fas fa-clock" aria-hidden="true"></i> Viernes y Sábado: 18:00 - 03:00</li>
+          <li><i class="fas fa-clock" aria-hidden="true"></i> Domingo: 17:00 - 00:00</li>
         </ul>
       </div>
     </div>
-    <div class="footer__bottom fade-in-scale">
+    <!-- Parte inferior del footer -->
+    <div class="footer__bottom">
       <div class="container footer__bottom-content">
-        <p class="footer__copyright staggered-item">
+        <p class="footer__copyright">
           &copy; 2025 1985 Bar Coctelería. Todos los derechos reservados.
         </p>
       </div>
@@ -461,163 +367,8 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- Script de Firebase y lógica del menú -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
-      authDomain: "bar1985-d34ea.firebaseapp.com",
-      projectId: "bar1985-d34ea",
-      storageBucket: "bar1985-d34ea.firebasestorage.app",
-      messagingSenderId: "1010372504350",
-      appId: "1:1010372504350:web:5b7a4f88bb6a52d270b70f",
-      measurementId: "G-1TEEFS4FL2"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.handleSubmit = async function(event) {
-      event.preventDefault();
-      const form = document.getElementById('reservaForm');
-      const formMessage = document.getElementById('form-message');
-      
-      if (!form) {
-        console.error('No se encontró el formulario #reservaForm');
-        return;
-      }
-
-      const nombre = form.nombre?.value?.trim() || '';
-      const telefono = form.telefono?.value?.trim() || '';
-      const fecha = form.fecha?.value || '';
-      const hora = form.hora?.value || '';
-      const personas = form.personas?.value || '';
-      const tipo = form.tipo?.value || '';
-
-      if (!nombre || !telefono || !fecha || !hora || !personas || !tipo) {
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = 'Por favor, completa todos los campos.';
-          formMessage.style.color = 'red';
-        }
-        return;
-      }
-
-      const phoneRegex = /^\+?[0-9]{10,15}$/;
-      if (!phoneRegex.test(telefono)) {
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = 'Por favor, introduce un número de teléfono válido.';
-          formMessage.style.color = 'red';
-        }
-        return;
-      }
-
-      const numPersonas = parseInt(personas, 10);
-      if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 20) {
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = 'Por favor, selecciona entre 1 y 20 personas.';
-          formMessage.style.color = 'red';
-        }
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, 'reservas'), {
-          nombre,
-          telefono,
-          fecha,
-          hora,
-          personas: numPersonas,
-          tipo,
-          createdAt: serverTimestamp()
-        });
-
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = '¡Reserva enviada con éxito!';
-          formMessage.style.color = 'green';
-        }
-        form.reset();
-      } catch (err) {
-        console.error('Error al guardar la reserva:', err);
-        let errorMessage = 'Ocurrió un error al guardar la reserva. Intenta de nuevo.';
-        if (err.code === 'permission-denied') {
-          errorMessage = 'No tienes permisos para guardar la reserva. Contacta al administrador.';
-        } else if (err.code === 'unavailable') {
-          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
-        }
-        if (formMessage) {
-          formMessage.hidden = false;
-          formMessage.textContent = errorMessage;
-          formMessage.style.color = 'red';
-        }
-      }
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const scrollTopBtn = document.getElementById('scrollTopBtn');
-      const hamburger = document.getElementById('hamburger');
-      const navLinks = document.getElementById('nav-links');
-
-      // Scroll-to-top button logic
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-          scrollTopBtn.classList.add('show');
-        } else {
-          scrollTopBtn.classList.remove('show');
-        }
-      });
-
-      scrollTopBtn.addEventListener('click', () => {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      });
-
-      // Intersection Observer for animations
-      const elements = document.querySelectorAll('.fade-in-slide, .fade-in-scale, .fade-in-left, .fade-in-right, .staggered-item');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              entry.target.classList.add('visible');
-            }, index * 100);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1 });
-
-      elements.forEach(element => observer.observe(element));
-
-      // Hamburger menu logic (al final para evitar conflictos con main.js)
-      if (hamburger && navLinks) {
-        console.log('Inicializando menú hamburguesa');
-        hamburger.addEventListener('click', () => {
-          console.log('Clic en hamburguesa');
-          const isOpen = navLinks.classList.toggle('open');
-          hamburger.setAttribute('aria-expanded', isOpen);
-          document.body.classList.toggle('menu-open');
-        });
-
-        navLinks.querySelectorAll('a').forEach(link => {
-          link.addEventListener('click', () => {
-            console.log('Clic en enlace del menú');
-            navLinks.classList.remove('open');
-            hamburger.setAttribute('aria-expanded', 'false');
-            document.body.classList.remove('menu-open');
-          });
-        });
-      } else {
-        console.error('No se encontraron elementos hamburger o nav-links');
-      }
-    });
-  </script>
-
+  <script type="module" src="firebase.js"></script>
   <script src="./js/main.js"></script>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>
