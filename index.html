@@ -26,7 +26,7 @@
       text-decoration: underline;
     }
     .yellow-text {
-      color: #FFD700 !important; /* Amarillo */
+      color: #FFD700 !important;
     }
     .footer__grid {
       display: flex;
@@ -54,7 +54,6 @@
       margin-top: 2rem;
       text-align: center;
     }
-    /* Enhanced Hero Animations (Unchanged) */
     .hero__content {
       opacity: 0;
       transform: translateY(60px) scale(0.95);
@@ -93,7 +92,6 @@
         transform: translateY(0);
       }
     }
-    /* Enhanced Scroll-to-Top Button */
     .scroll-top-btn {
       position: fixed;
       bottom: 30px;
@@ -147,7 +145,6 @@
         right: 20px;
       }
     }
-    /* New Futuristic Animations for Non-Hero Sections */
     .fade-in-slide {
       opacity: 0;
       transform: translateY(30px);
@@ -184,7 +181,6 @@
       opacity: 1;
       transform: translateX(0);
     }
-    /* Staggered animation for lists and cards */
     .staggered-item {
       opacity: 0;
       transform: translateY(20px);
@@ -194,7 +190,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-    /* Hover effect for buttons and interactive elements */
     .btn, .tab {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -422,7 +417,6 @@
   <!-- Footer / Contacto -->
   <footer class="footer fade-in-slide" id="contacto" aria-labelledby="contacto-title">
     <div class="container footer__grid">
-      <!-- Sección de Contacto -->
       <div class="footer__section fade-in-left">
         <h3 class="footer__title" id="contacto-title">Contacto</h3>
         <address class="footer__list" aria-label="Información de contacto de 1985 Bar Coctelería">
@@ -444,7 +438,6 @@
           </ul>
         </address>
       </div>
-      <!-- Sección de Horarios -->
       <div class="footer__section fade-in-right">
         <h3 class="footer__title">Horarios</h3>
         <ul class="footer__list">
@@ -454,7 +447,6 @@
         </ul>
       </div>
     </div>
-    <!-- Parte inferior del footer -->
     <div class="footer__bottom fade-in-scale">
       <div class="container footer__bottom-content">
         <p class="footer__copyright staggered-item">
@@ -469,13 +461,11 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- Script de Firebase para manejar reservas -->
+  <!-- Script de Firebase y lógica del menú -->
   <script type="module">
-    // Importar módulos de Firebase (versión actualizada)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    // Configuración de Firebase (usar la configuración de tu proyecto)
     const firebaseConfig = {
       apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
       authDomain: "bar1985-d34ea.firebaseapp.com",
@@ -486,14 +476,11 @@
       measurementId: "G-1TEEFS4FL2"
     };
 
-    // Inicializar Firebase y Firestore
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función global para manejar el envío del formulario
     window.handleSubmit = async function(event) {
       event.preventDefault();
-      
       const form = document.getElementById('reservaForm');
       const formMessage = document.getElementById('form-message');
       
@@ -502,7 +489,6 @@
         return;
       }
 
-      // Obtener valores del formulario
       const nombre = form.nombre?.value?.trim() || '';
       const telefono = form.telefono?.value?.trim() || '';
       const fecha = form.fecha?.value || '';
@@ -510,7 +496,6 @@
       const personas = form.personas?.value || '';
       const tipo = form.tipo?.value || '';
 
-      // Validación básica
       if (!nombre || !telefono || !fecha || !hora || !personas || !tipo) {
         if (formMessage) {
           formMessage.hidden = false;
@@ -520,7 +505,6 @@
         return;
       }
 
-      // Validación adicional para el teléfono
       const phoneRegex = /^\+?[0-9]{10,15}$/;
       if (!phoneRegex.test(telefono)) {
         if (formMessage) {
@@ -531,7 +515,6 @@
         return;
       }
 
-      // Validación para el número de personas
       const numPersonas = parseInt(personas, 10);
       if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 20) {
         if (formMessage) {
@@ -543,7 +526,6 @@
       }
 
       try {
-        // Guardar la reserva en la colección 'reservas'
         await addDoc(collection(db, 'reservas'), {
           nombre,
           telefono,
@@ -554,26 +536,20 @@
           createdAt: serverTimestamp()
         });
 
-        // Mostrar mensaje de éxito
         if (formMessage) {
           formMessage.hidden = false;
           formMessage.textContent = '¡Reserva enviada con éxito!';
           formMessage.style.color = 'green';
         }
-
-        // Reiniciar el formulario
         form.reset();
       } catch (err) {
         console.error('Error al guardar la reserva:', err);
         let errorMessage = 'Ocurrió un error al guardar la reserva. Intenta de nuevo.';
-        
-        // Manejo de errores específicos de Firebase
         if (err.code === 'permission-denied') {
           errorMessage = 'No tienes permisos para guardar la reserva. Contacta al administrador.';
         } else if (err.code === 'unavailable') {
           errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
         }
-
         if (formMessage) {
           formMessage.hidden = false;
           formMessage.textContent = errorMessage;
@@ -582,7 +558,6 @@
       }
     };
 
-    // Script para el botón de volver arriba, animaciones y menú hamburguesa
     document.addEventListener('DOMContentLoaded', () => {
       const scrollTopBtn = document.getElementById('scrollTopBtn');
       const hamburger = document.getElementById('hamburger');
@@ -604,22 +579,6 @@
         });
       });
 
-      // Hamburger menu logic
-      hamburger.addEventListener('click', () => {
-        const isOpen = navLinks.classList.toggle('open');
-        hamburger.setAttribute('aria-expanded', isOpen);
-        document.body.classList.toggle('menu-open'); // Bloquea/desbloquea desplazamiento
-      });
-
-      // Cerrar menú al hacer clic en un enlace
-      navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          navLinks.classList.remove('open');
-          hamburger.setAttribute('aria-expanded', 'false');
-          document.body.classList.remove('menu-open');
-        });
-      });
-
       // Intersection Observer for animations
       const elements = document.querySelectorAll('.fade-in-slide, .fade-in-scale, .fade-in-left, .fade-in-right, .staggered-item');
       const observer = new IntersectionObserver((entries) => {
@@ -627,13 +586,35 @@
           if (entry.isIntersecting) {
             setTimeout(() => {
               entry.target.classList.add('visible');
-            }, index * 100); // Stagger effect
+            }, index * 100);
             observer.unobserve(entry.target);
           }
         });
       }, { threshold: 0.1 });
 
       elements.forEach(element => observer.observe(element));
+
+      // Hamburger menu logic (al final para evitar conflictos con main.js)
+      if (hamburger && navLinks) {
+        console.log('Inicializando menú hamburguesa');
+        hamburger.addEventListener('click', () => {
+          console.log('Clic en hamburguesa');
+          const isOpen = navLinks.classList.toggle('open');
+          hamburger.setAttribute('aria-expanded', isOpen);
+          document.body.classList.toggle('menu-open');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            console.log('Clic en enlace del menú');
+            navLinks.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('menu-open');
+          });
+        });
+      } else {
+        console.error('No se encontraron elementos hamburger o nav-links');
+      }
     });
   </script>
 
