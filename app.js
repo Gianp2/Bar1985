@@ -26,6 +26,7 @@ const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 const homeBtn = document.getElementById('homeBtn');
 
 let deleteDocId = null;
+let unsubscribeSnapshot = null;
 
 // -----------------------
 // Toast notification
@@ -50,9 +51,18 @@ loginForm.addEventListener('submit', async (e) => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
-  if (!email) { emailError.textContent = 'El correo es requerido'; return; }
-  if (!/\S+@\S+\.\S+/.test(email)) { emailError.textContent = 'Correo inválido'; return; }
-  if (!password) { passwordError.textContent = 'Contraseña requerida'; return; }
+  if (!email) { 
+    emailError.textContent = 'El correo es requerido'; 
+    return; 
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) { 
+    emailError.textContent = 'Correo inválido'; 
+    return; 
+  }
+  if (!password) { 
+    passwordError.textContent = 'Contraseña requerida'; 
+    return; 
+  }
 
   loginBtn.disabled = true;
   loginBtn.textContent = 'Cargando...';
@@ -95,6 +105,7 @@ homeBtn.addEventListener('click', () => window.location.href = './index.html');
 // -----------------------
 function populateTable(snap) {
   tblBody.innerHTML = '';
+  let visibleCount = 0;
   snap.forEach((docItem) => {
     const r = docItem.data();
     if (shouldDisplayRow(r)) {
@@ -108,10 +119,22 @@ function populateTable(snap) {
         <td><button class="action-btn" data-id="${docItem.id}" aria-label="Eliminar reserva">Eliminar</button></td>
       `;
       tblBody.appendChild(tr);
+      visibleCount++;
     }
   });
 
+  if (visibleCount === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="6" style="text-align: center; padding: 2rem; color: var(--muted);">No hay reservas que coincidan con el filtro.</td>';
+    tblBody.appendChild(tr);
+  }
+
   // Botones de eliminar
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    // Remover listeners previos para evitar duplicados
+    btn.replaceWith(btn.cloneNode(true));
+  });
+
   document.querySelectorAll('.action-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       deleteDocId = btn.dataset.id;
@@ -133,12 +156,36 @@ function shouldDisplayRow(data) {
   return matchesName && matchesDate;
 }
 
-filterName.addEventListener('input', fetchAndPopulate);
+filterName.addEventListener('input', debounce(fetchAndPopulate, 300));
 filterDate.addEventListener('change', fetchAndPopulate);
 
 function fetchAndPopulate() {
+  // Unsubscribe previous snapshot if exists
+  if (unsubscribeSnapshot) {
+    unsubscribeSnapshot();
+    unsubscribeSnapshot = null;
+  }
+
   const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
-  onSnapshot(q, snap => populateTable(snap));
+  unsubscribeSnapshot = onSnapshot(q, snap => populateTable(snap), err => {
+    console.error(err);
+    showToast('Error al cargar reservas', false);
+  });
+}
+
+// -----------------------
+// Debounce utility
+// -----------------------
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 // -----------------------
@@ -173,6 +220,15 @@ confirmModal.addEventListener('keydown', (e) => {
   }
 });
 
+// Click outside modal to close
+confirmModal.addEventListener('click', (e) => {
+  if (e.target === confirmModal) {
+    deleteDocId = null;
+    confirmModal.style.display = 'none';
+    confirmModal.setAttribute('aria-hidden', 'true');
+  }
+});
+
 // -----------------------
 // Observador de auth
 // -----------------------
@@ -182,15 +238,19 @@ onAuthStateChanged(auth, (user) => {
     adminArea.style.display = 'block';
     userEmailSpan.textContent = user.email || 'Usuario';
 
-    const q = query(collection(db, 'reservas'), orderBy('createdAt', 'desc'));
-    onSnapshot(q, snap => populateTable(snap), err => {
-      console.error(err);
-      showToast('Error al cargar reservas', false);
-    });
+    // Fetch initial data
+    fetchAndPopulate();
   } else {
+    // Cleanup
+    if (unsubscribeSnapshot) {
+      unsubscribeSnapshot();
+      unsubscribeSnapshot = null;
+    }
     loginArea.style.display = 'block';
     adminArea.style.display = 'none';
     confirmModal.style.display = 'none';
+    deleteDocId = null;
+    tblBody.innerHTML = '';
   }
 });
 
@@ -198,6 +258,7 @@ onAuthStateChanged(auth, (user) => {
 // Función para escapar HTML
 // -----------------------
 function escapeHtml(str) {
+  if (str == null) return '';
   return String(str).replace(/[&<>"']/g, c => ({
     '&': '&amp;',
     '<': '&lt;',
