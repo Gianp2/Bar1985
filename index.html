@@ -220,6 +220,13 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
+    /* Fix for hamburger menu scrolling */
+    body.menu-open {
+      overflow: hidden;
+    }
+    body.menu-open ::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -643,6 +650,44 @@
       }, { threshold: 0.1 });
 
       elements.forEach(element => observer.observe(element));
+
+      // Hamburger menu functionality - Fixed to prevent body scroll
+      const hamburger = document.getElementById('hamburger');
+      const navLinks = document.getElementById('nav-links');
+
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+          const isOpen = navLinks.classList.contains('open');
+          if (isOpen) {
+            navLinks.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          } else {
+            navLinks.classList.add('open');
+            document.body.classList.add('menu-open');
+            hamburger.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        // Close menu on link click
+        const menuLinks = navLinks.querySelectorAll('a');
+        menuLinks.forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          });
+        });
+
+        // Close menu on outside click (optional, for better UX)
+        document.addEventListener('click', (e) => {
+          if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+            navLinks.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
     });
   </script>
 
