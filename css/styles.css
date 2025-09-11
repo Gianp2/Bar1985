@@ -23,7 +23,7 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  overflow-x: hidden; /* Bloquea scroll horizontal */
+  overflow-x: hidden;
 }
 
 body {
@@ -33,9 +33,13 @@ body {
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Bloquea scroll horizontal */
+  overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+}
+
+body.menu-open {
+  overflow: hidden; /* Bloquea el desplazamiento cuando el menú está abierto */
 }
 
 /* === Estilos para imágenes === */
@@ -549,7 +553,7 @@ input:focus, textarea:focus {
   color: var(--bg);
   border: none;
   cursor: pointer;
-  display: none; /* Inicialmente oculto */
+  display: none;
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow);
@@ -599,6 +603,8 @@ input:focus, textarea:focus {
     align-items: center;
     justify-content: center;
     height: calc(100vh - 60px);
+    z-index: 1000; /* Asegura que el menú esté por encima de otros elementos */
+    overflow-y: auto; /* Permite scroll interno si el contenido del menú es largo */
   }
 
   .nav-links.open {
@@ -622,6 +628,7 @@ input:focus, textarea:focus {
 
   .hamburger {
     display: block;
+    z-index: 1100; /* Asegura que el botón esté por encima del menú */
   }
 
   .cards {
@@ -639,12 +646,12 @@ input:focus, textarea:focus {
   .tabs {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Oculta la barra de desplazamiento en Firefox */
-    -ms-overflow-style: none; /* Oculta la barra de desplazamiento en IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   .tabs::-webkit-scrollbar {
-    display: none; /* Oculta la barra de desplazamiento en WebKit (Chrome, Safari) */
+    display: none;
   }
 
   .tab {
