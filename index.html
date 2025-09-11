@@ -54,7 +54,7 @@
       margin-top: 2rem;
       text-align: center;
     }
-    /* Enhanced Hero Animations (Unchanged as per request) */
+    /* Enhanced Hero Animations */
     .hero__content {
       opacity: 0;
       transform: translateY(60px) scale(0.95);
@@ -93,7 +93,7 @@
         transform: translateY(0);
       }
     }
-    /* Enhanced Scroll-to-Top Button - Fixed positioning and behavior */
+    /* Scroll-to-Top Button */
     .scroll-top-btn {
       position: fixed;
       bottom: 30px;
@@ -113,7 +113,7 @@
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       z-index: 1000;
-      border: none; /* Ensure no border adds width */
+      border: none;
     }
     .scroll-top-btn.show {
       opacity: 1;
@@ -139,7 +139,96 @@
         opacity: 1;
       }
     }
+    /* Hamburger Menu Styles */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 30px;
+      height: 24px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      z-index: 1100;
+    }
+    .hamburger span {
+      width: 100%;
+      height: 3px;
+      background: #FFD700;
+      transition: all 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+    }
+    .nav-links a:hover {
+      color: #FFD700;
+    }
+    /* Fix horizontal scroll */
+    body {
+      overflow-x: hidden;
+    }
+    .container {
+      overflow-x: hidden;
+    }
+    .nav {
+      overflow-x: hidden;
+    }
+    .nav-links {
+      overflow-x: hidden;
+    }
+    .tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* Disable scroll when menu is open */
+    body.menu-open {
+      overflow: hidden;
+    }
+    body.menu-open ::-webkit-scrollbar {
+      display: none;
+    }
+    /* Responsive Styles */
     @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 75%;
+        max-width: 300px;
+        background: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: right 0.3s ease;
+        z-index: 1000;
+      }
+      .nav-links.open {
+        right: 0;
+      }
+      .nav-links a {
+        font-size: 1.5rem;
+        margin: 1rem 0;
+      }
       .scroll-top-btn {
         width: 40px;
         height: 40px;
@@ -148,7 +237,7 @@
         right: 20px;
       }
     }
-    /* New Futuristic Animations for Non-Hero Sections */
+    /* Animations for Non-Hero Sections */
     .fade-in-slide {
       opacity: 0;
       transform: translateY(30px);
@@ -185,7 +274,6 @@
       opacity: 1;
       transform: translateX(0);
     }
-    /* Staggered animation for lists and cards */
     .staggered-item {
       opacity: 0;
       transform: translateY(20px);
@@ -195,37 +283,12 @@
       opacity: 1;
       transform: translateY(0);
     }
-    /* Hover effect for buttons and interactive elements */
     .btn, .tab {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .btn:hover, .tab:hover {
       transform: translateY(-3px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-    /* Fix for horizontal scroll - Ensure no overflow */
-    body {
-      overflow-x: hidden;
-    }
-    .container {
-      overflow-x: hidden;
-    }
-    .nav {
-      overflow-x: hidden;
-    }
-    .nav-links {
-      overflow-x: hidden;
-    }
-    .tabs {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    /* Fix for hamburger menu scrolling */
-    body.menu-open {
-      overflow: hidden;
-    }
-    body.menu-open ::-webkit-scrollbar {
-      display: none;
     }
   </style>
 </head>
@@ -255,7 +318,7 @@
     </div>
   </header>
 
-  <!-- Hero / Home (Unchanged) -->
+  <!-- Hero / Home -->
   <section class="hero" id="home" aria-labelledby="home-title">
     <video class="hero__video" autoplay muted loop playsinline aria-hidden="true">
       <source src="../assets/videohero2.mp4" type="video/mp4">
@@ -390,7 +453,7 @@
               id="fecha" 
               name="fecha" 
               type="date" 
-              min="2025-09-09" 
+              min="2025-09-11" 
               required 
               aria-required="true"
               aria-describedby="fecha-error"
@@ -479,7 +542,6 @@
         </ul>
       </div>
     </div>
-    <!-- Parte inferior del footer -->
     <div class="footer__bottom fade-in-scale">
       <div class="container footer__bottom-content">
         <p class="footer__copyright staggered-item">
@@ -496,11 +558,9 @@
 
   <!-- Script de Firebase para manejar reservas -->
   <script type="module">
-    // Importar módulos de Firebase (versión actualizada)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    // Configuración de Firebase (usar la configuración de tu proyecto)
     const firebaseConfig = {
       apiKey: "AIzaSyCKsjeGtSUEI_umn_MPMzqbES2T-NUt_Vs",
       authDomain: "bar1985-d34ea.firebaseapp.com",
@@ -511,14 +571,11 @@
       measurementId: "G-1TEEFS4FL2"
     };
 
-    // Inicializar Firebase y Firestore
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función global para manejar el envío del formulario
     window.handleSubmit = async function(event) {
       event.preventDefault();
-      
       const form = document.getElementById('reservaForm');
       const formMessage = document.getElementById('form-message');
       
@@ -527,7 +584,6 @@
         return;
       }
 
-      // Obtener valores del formulario
       const nombre = form.nombre?.value?.trim() || '';
       const telefono = form.telefono?.value?.trim() || '';
       const fecha = form.fecha?.value || '';
@@ -535,7 +591,6 @@
       const personas = form.personas?.value || '';
       const tipo = form.tipo?.value || '';
 
-      // Validación básica
       if (!nombre || !telefono || !fecha || !hora || !personas || !tipo) {
         if (formMessage) {
           formMessage.hidden = false;
@@ -545,7 +600,6 @@
         return;
       }
 
-      // Validación adicional para el teléfono
       const phoneRegex = /^\+?[0-9]{10,15}$/;
       if (!phoneRegex.test(telefono)) {
         if (formMessage) {
@@ -556,7 +610,6 @@
         return;
       }
 
-      // Validación para el número de personas
       const numPersonas = parseInt(personas, 10);
       if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 20) {
         if (formMessage) {
@@ -568,7 +621,6 @@
       }
 
       try {
-        // Guardar la reserva en la colección 'reservas'
         await addDoc(collection(db, 'reservas'), {
           nombre,
           telefono,
@@ -579,26 +631,20 @@
           createdAt: serverTimestamp()
         });
 
-        // Mostrar mensaje de éxito
         if (formMessage) {
           formMessage.hidden = false;
           formMessage.textContent = '¡Reserva enviada con éxito!';
           formMessage.style.color = 'green';
         }
-
-        // Reiniciar el formulario
         form.reset();
       } catch (err) {
         console.error('Error al guardar la reserva:', err);
         let errorMessage = 'Ocurrió un error al guardar la reserva. Intenta de nuevo.';
-        
-        // Manejo de errores específicos de Firebase
         if (err.code === 'permission-denied') {
           errorMessage = 'No tienes permisos para guardar la reserva. Contacta al administrador.';
         } else if (err.code === 'unavailable') {
           errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
         }
-
         if (formMessage) {
           formMessage.hidden = false;
           formMessage.textContent = errorMessage;
@@ -607,11 +653,12 @@
       }
     };
 
-    // Script para el botón de volver arriba y animaciones
     document.addEventListener('DOMContentLoaded', () => {
       const scrollTopBtn = document.getElementById('scrollTopBtn');
-      
-      // Scroll-to-top button logic - Fixed to hide on scroll up to 0
+      const hamburger = document.getElementById('hamburger');
+      const navLinks = document.getElementById('nav-links');
+
+      // Scroll-to-top button logic
       let ticking = false;
       function updateScrollBtn() {
         if (window.scrollY > 300) {
@@ -636,6 +683,44 @@
         });
       });
 
+      // Hamburger menu logic
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+          const isOpen = navLinks.classList.contains('open');
+          if (isOpen) {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          } else {
+            navLinks.classList.add('open');
+            hamburger.classList.add('open');
+            document.body.classList.add('menu-open');
+            hamburger.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          });
+        });
+
+        // Close menu on outside click
+        document.addEventListener('click', (e) => {
+          if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('open');
+            document.body.classList.remove('menu-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
       // Intersection Observer for animations
       const elements = document.querySelectorAll('.fade-in-slide, .fade-in-scale, .fade-in-left, .fade-in-right, .staggered-item');
       const observer = new IntersectionObserver((entries) => {
@@ -643,54 +728,14 @@
           if (entry.isIntersecting) {
             setTimeout(() => {
               entry.target.classList.add('visible');
-            }, index * 100); // Stagger effect
+            }, index * 100);
             observer.unobserve(entry.target);
           }
         });
       }, { threshold: 0.1 });
 
       elements.forEach(element => observer.observe(element));
-
-      // Hamburger menu functionality - Fixed to prevent body scroll
-      const hamburger = document.getElementById('hamburger');
-      const navLinks = document.getElementById('nav-links');
-
-      if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-          const isOpen = navLinks.classList.contains('open');
-          if (isOpen) {
-            navLinks.classList.remove('open');
-            document.body.classList.remove('menu-open');
-            hamburger.setAttribute('aria-expanded', 'false');
-          } else {
-            navLinks.classList.add('open');
-            document.body.classList.add('menu-open');
-            hamburger.setAttribute('aria-expanded', 'true');
-          }
-        });
-
-        // Close menu on link click
-        const menuLinks = navLinks.querySelectorAll('a');
-        menuLinks.forEach(link => {
-          link.addEventListener('click', () => {
-            navLinks.classList.remove('open');
-            document.body.classList.remove('menu-open');
-            hamburger.setAttribute('aria-expanded', 'false');
-          });
-        });
-
-        // Close menu on outside click (optional, for better UX)
-        document.addEventListener('click', (e) => {
-          if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
-            navLinks.classList.remove('open');
-            document.body.classList.remove('menu-open');
-            hamburger.setAttribute('aria-expanded', 'false');
-          }
-        });
-      }
     });
   </script>
-
-  <script src="./js/main.js"></script>
 </body>
 </html>
