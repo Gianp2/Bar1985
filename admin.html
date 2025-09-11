@@ -434,27 +434,35 @@
       </div>
     </div>
   </main>
-  <script type="module">
-    import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, collection, query, orderBy, onSnapshot, doc, deleteDoc } from './firebase.js';
+  
+<script type="module">
+  import { 
+    auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, 
+    collection, query, orderBy, onSnapshot, doc, deleteDoc 
+  } from './firebase.js';
 
-    const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
-    const loginArea = document.getElementById('loginArea');
-    const adminArea = document.getElementById('adminArea');
-    const userEmailSpan = document.getElementById('userEmail');
-    const tblBody = document.querySelector('#tblReservas tbody');
-    const loginForm = document.getElementById('loginForm');
-    const loginBtn = document.getElementById('loginBtn');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const emailError = document.getElementById('emailError');
-    const passwordError = document.getElementById('passwordError');
-    const filterName = document.getElementById('filterName');
-    const filterDate = document.getElementById('filterDate');
-    const confirmModal = document.getElementById('confirmModal');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-    const homeBtn = document.getElementById('homeBtn');
-    let deleteDocId = null;
+  // ❌ Eliminamos el ADMIN_UID hardcodeado
+  // const ADMIN_UID = 'YqhSLbtSjHdkj4pfjrfinMZMxut1';
+
+  // Elementos del DOM
+  const loginArea = document.getElementById('loginArea');
+  const adminArea = document.getElementById('adminArea');
+  const userEmailSpan = document.getElementById('userEmail');
+  const tblBody = document.querySelector('#tblReservas tbody');
+  const loginForm = document.getElementById('loginForm');
+  const loginBtn = document.getElementById('loginBtn');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+  const filterName = document.getElementById('filterName');
+  const filterDate = document.getElementById('filterDate');
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  const homeBtn = document.getElementById('homeBtn');
+  let deleteDocId = null;
+
 
     // Initialize modal state
     confirmModal.style.display = 'none';
